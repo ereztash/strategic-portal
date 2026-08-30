@@ -1146,3 +1146,8 @@ code {
     height: 44px;
   }
 }
+
+/* The recovery panel shown when a view fails to render. */
+.view-error { text-align: center; padding: var(--space-7) var(--space-5); }
+.view-error .field-hint { max-width: 52ch; margin-inline: auto; }
+.view-error .output-actions { justify-content: center; margin-block-start: var(--space-5); }

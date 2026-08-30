@@ -201,10 +201,43 @@ function boot() {
 
   function renderView(route) {
     const render = VIEWS[route.name] ?? VIEWS.home;
-    const view = render({ app, router, params: route.params ?? {}, query: route.query ?? {} });
+    let view;
+    try {
+      view = render({ app, router, params: route.params ?? {}, query: route.query ?? {} });
+    } catch (error) {
+      // Without this the throw escapes before `replace` runs, so the previous
+      // view stays on screen while the address bar and the nav both move on.
+      // The app then quietly claims to be somewhere it never rendered, which
+      // reads as a click that did nothing rather than as a fault.
+      view = recoveryView(error);
+    }
     replace(main, view);
     paintBreadcrumbs(route);
     paintNavState(route);
+  }
+
+  /**
+   * What a visitor gets when a view cannot render.
+   *
+   * Everything is local, so the data behind the failure is theirs and still on
+   * the device: the way out is a route that does not depend on it, not a
+   * reload that would land right back here. The message stays plain, and the
+   * detail goes to the console for whoever is actually debugging.
+   */
+  function recoveryView(error) {
+    console.error('view failed to render', error);
+    return h(
+      'div',
+      { class: 'panel view-error', role: 'alert' },
+      h('h2', { class: 'section-title' }, t('error.title')),
+      h('p', { class: 'field-hint' }, t('error.body')),
+      h(
+        'div',
+        { class: 'output-actions' },
+        h('button', { class: 'btn btn-primary', type: 'button', onClick: () => router.go('home') }, t('error.home')),
+        h('button', { class: 'btn', type: 'button', onClick: () => router.go('settings') }, t('error.settings')),
+      ),
+    );
   }
 
   function handleRoute(route) {
