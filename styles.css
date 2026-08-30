@@ -968,3 +968,45 @@ code {
   font-weight: 800;
   font-size: 0.8rem;
 }
+
+/* --- Community invitation -------------------------------------------------- */
+
+/* One primary action, so there is nothing to weigh up against it. */
+.join-btn { text-decoration: none; align-self: flex-start; }
+.community { gap: var(--space-4); }
+.community-more { margin-block-start: var(--space-2); }
+.community-more summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  list-style: none;
+}
+.community-more summary::-webkit-details-marker { display: none; }
+.community-more summary::before { content: '+ '; }
+.community-more[open] summary::before { content: '− '; }
+.community-more summary:hover { color: var(--text); }
+.community-more .footer-links { margin-block-start: var(--space-3); }
+
+.contact-row.is-primary,
+.contact-card.is-primary {
+  border-color: color-mix(in srgb, var(--success) 45%, transparent);
+  color: var(--success);
+}
+
+.invite-slot:empty { display: none; }
+.invite {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-block-start: var(--space-3);
+  border-color: color-mix(in srgb, var(--success) 40%, var(--border));
+  background: color-mix(in srgb, var(--success) 7%, var(--surface));
+  animation: rise 260ms var(--ease) both;
+}
+.invite-body { flex: 1 1 260px; display: flex; flex-direction: column; gap: 4px; }
+.invite-title { display: flex; align-items: center; gap: var(--space-2); font-size: 1rem; }
+.invite-title .icon { color: var(--success); }
+.invite-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }

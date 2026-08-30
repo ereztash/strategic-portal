@@ -34,6 +34,8 @@ export const DEFAULTS = {
   favorites: [],
   recents: [],
   stats: { totalGenerated: 0, totalCopied: 0, totalSaved: 0, engines: {}, daily: {} },
+  /** Drives when the community invitation may appear. See core/invite.js. */
+  engagement: { shownAt: null, dismissedAt: null, joined: false },
 };
 
 /** localStorage-compatible object that never throws. */

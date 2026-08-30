@@ -10,7 +10,7 @@
  */
 
 /* --- precache:start --- */
-const CACHE_VERSION = 'bf3b99052c';
+const CACHE_VERSION = '87df325ff8';
 const PRECACHE = [
   './',
   './assets/icon-maskable.svg',
@@ -19,6 +19,7 @@ const PRECACHE = [
   './manifest.webmanifest',
   './src/core/diff.js',
   './src/core/i18n.js',
+  './src/core/invite.js',
   './src/core/modifiers.js',
   './src/core/registry.js',
   './src/core/search.js',

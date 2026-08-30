@@ -15,6 +15,7 @@ import { CATEGORIES, CUSTOM_CATEGORY } from '../src/data/categories.js';
 import { BUILTIN_ENGINES } from '../src/data/engines/index.js';
 import { buildServiceWorker, isCurrent } from '../scripts/build-sw.js';
 import { CONTACT } from '../src/data/contact.js';
+import { DISMISS_COOLDOWN_DAYS, MIN_COPIES_BEFORE_ASK, inviteDecision } from '../src/core/invite.js';
 import { readFile } from 'node:fs/promises';
 
 test.after(() => setLocale('he'));
@@ -319,4 +320,55 @@ test('the repo carries the metadata a public project needs', async () => {
   const license = await readFile(new URL('../LICENSE', import.meta.url), 'utf8');
   assert.match(license, /MIT License/);
   assert.match(license, /Erez Tal-Shir/);
+});
+
+/* --- community invitation timing ----------------------------------------- */
+
+test('the invitation is withheld until value has actually landed', () => {
+  assert.equal(inviteDecision({ copies: 0, engagement: {} }).reason, 'not-enough-value-yet');
+  assert.equal(inviteDecision({ copies: 1, engagement: {} }).show, false);
+  assert.equal(inviteDecision({ copies: MIN_COPIES_BEFORE_ASK, engagement: {} }).show, true);
+});
+
+test('a dismissal is honoured, then expires', () => {
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+  const justDismissed = inviteDecision({ copies: 9, engagement: { dismissedAt: now - day }, now });
+  assert.equal(justDismissed.show, false);
+  assert.equal(justDismissed.reason, 'recently-dismissed');
+
+  const longAgo = inviteDecision({
+    copies: 9,
+    engagement: { dismissedAt: now - (DISMISS_COOLDOWN_DAYS + 1) * day },
+    now,
+  });
+  assert.equal(longAgo.show, true);
+});
+
+test('joining stops the asking for good', () => {
+  const decision = inviteDecision({ copies: 500, engagement: { joined: true } });
+  assert.equal(decision.show, false);
+  assert.equal(decision.reason, 'already-joined');
+});
+
+test('it never appears twice in a day', () => {
+  const now = Date.now();
+  assert.equal(inviteDecision({ copies: 9, engagement: { shownAt: now - 60_000 }, now }).reason, 'shown-recently');
+  assert.equal(inviteDecision({ copies: 9, engagement: { shownAt: now - 25 * 60 * 60 * 1000 }, now }).show, true);
+});
+
+test('a joined visitor is never asked, even after a stale dismissal expires', () => {
+  const now = Date.now();
+  const decision = inviteDecision({
+    copies: 99,
+    engagement: { joined: true, dismissedAt: now - 400 * 24 * 60 * 60 * 1000 },
+    now,
+  });
+  assert.equal(decision.show, false);
+});
+
+test('exactly one contact link is promoted as the primary action', () => {
+  const primary = CONTACT.links.filter((link) => link.primary);
+  assert.equal(primary.length, 1, 'more than one primary defeats having a primary');
+  assert.match(primary[0].url, /^https:\/\/chat\.whatsapp\.com\//);
 });
