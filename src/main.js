@@ -242,11 +242,51 @@ function boot() {
     setTimeout(() => loader.remove(), 450);
   }
 
-  if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
-      /* offline support is a bonus, never a hard requirement */
+  installServiceWorker();
+}
+
+/**
+ * Register the service worker, and - just as importantly - handle its updates.
+ *
+ * The worker caches the shell so the portal opens offline, which means a
+ * returning visitor is served the build they cached last. Without the handler
+ * below, a deploy is invisible to them: the first reload still renders the old
+ * version, because the new worker only takes over once the page it was meant to
+ * update has already been drawn. They would have to reload twice, with nothing
+ * telling them to.
+ *
+ * `controllerchange` fires the moment the new worker claims this page, so that
+ * is where the update is picked up. Reloading is silent when nothing would be
+ * lost; if the visitor has typed anything, they get a toast instead and decide
+ * for themselves, because throwing away a half-written prompt to apply an
+ * update is a bad trade.
+ */
+function installServiceWorker() {
+  if (!('serviceWorker' in navigator) || !window.location.protocol.startsWith('http')) return;
+
+  let typed = false;
+  document.addEventListener('input', () => { typed = true; }, { capture: true, once: true });
+
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // Guards a reload loop: controllerchange fires again on the fresh page.
+    if (reloading) return;
+    reloading = true;
+
+    if (!typed) {
+      window.location.reload();
+      return;
+    }
+    toast(t('toast.updateReady'), {
+      tone: 'info',
+      action: () => window.location.reload(),
+      actionLabel: t('toast.updateAction'),
     });
-  }
+  });
+
+  navigator.serviceWorker.register('./sw.js').catch(() => {
+    /* offline support is a bonus, never a hard requirement */
+  });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
