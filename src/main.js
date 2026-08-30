@@ -17,6 +17,7 @@ import { getCategory } from './data/categories.js';
 import { toast } from './ui/toast.js';
 import { openPalette } from './ui/palette.js';
 import { installShortcuts } from './ui/shortcuts.js';
+import { renderFooter } from './ui/footer.js';
 
 import { renderHome } from './ui/views/home.js';
 import { renderCategory } from './ui/views/category.js';
@@ -142,6 +143,7 @@ function boot() {
     h('a', { class: 'skip-link', href: '#main' }, t('app.skipToContent')),
     header,
     main,
+    renderFooter(),
   );
 
   /* --- rendering -------------------------------------------------------- */

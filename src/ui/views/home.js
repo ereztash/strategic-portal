@@ -4,6 +4,7 @@ import { h } from '../dom.js';
 import { icon } from '../icons.js';
 import { t } from '../../core/i18n.js';
 import { categoryCard, emptyState, engineCard, sectionHead } from '../components.js';
+import { communityBlock } from '../footer.js';
 
 export function renderHome({ app, router }) {
   const openCategory = (id) => router.go('category', { categoryId: id });
@@ -71,5 +72,7 @@ export function renderHome({ app, router }) {
           message: t('home.noFavorites'),
         })
       : null,
+
+    communityBlock(),
   );
 }

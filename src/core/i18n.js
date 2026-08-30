@@ -239,6 +239,13 @@ const DICTIONARIES = {
     'toast.storageFull': 'האחסון המקומי מלא. מחקו פריטים מהכספת.',
     'toast.offlineReady': 'הפורטל זמין גם ללא רשת',
 
+    'contact.title': 'לא חייבים להסתדר עם זה לבד',
+    'contact.lead': 'הפורטל הוא כלי. הקהילה היא המקום שבו מבינים איך להשתמש בו - שאלות, פרומפטים שעבדו, ומה שלא.',
+    'contact.join': 'הצטרפו לקהילה',
+    'contact.builtBy': 'נבנה על ידי',
+    'contact.footerNote': 'הכל נשמר במכשיר שלכם. אין שרת, אין חשבון, אין מעקב.',
+    'contact.openIn': 'נפתח בחלון חדש',
+
     'time.justNow': 'ממש עכשיו',
     'time.minutesAgo': (n) => `לפני ${n} דקות`,
     'time.hoursAgo': (n) => `לפני ${n} שעות`,
@@ -470,6 +477,13 @@ const DICTIONARIES = {
     'toast.engineDeleted': 'Engine deleted',
     'toast.storageFull': 'Local storage is full. Delete some vault items.',
     'toast.offlineReady': 'The portal now works offline',
+
+    'contact.title': 'You do not have to work this out alone',
+    'contact.lead': 'The portal is the tool. The community is where people work out how to use it - questions, prompts that landed, and the ones that did not.',
+    'contact.join': 'Join the community',
+    'contact.builtBy': 'Built by',
+    'contact.footerNote': 'Everything stays on your device. No server, no account, no tracking.',
+    'contact.openIn': 'Opens in a new tab',
 
     'time.justNow': 'just now',
     'time.minutesAgo': (n) => `${n} min ago`,

@@ -141,3 +141,21 @@ app falls back to memory and says so instead of failing silently.
 
 Static hosting, no build. `vercel.json` sets `cleanUrls`, a CSP, and a
 `no-store` policy for `sw.js` so updates are picked up.
+
+---
+
+## קהילה ויצירת קשר
+
+הפורטל הוא כלי. הקהילה היא המקום שבו מבינים איך להשתמש בו.
+
+- **קהילת מ-0 ל-AI** — [קבוצת הוואטסאפ הפתוחה](https://chat.whatsapp.com/Ja5mg2IDxAxG2O0FKl3c7S)
+- **קבוצת הפורטל** — [הקבוצה הייעודית](https://chat.whatsapp.com/CTG7ptNi8zFBoAtyOSyYFm)
+- **לינקדאין** — [ארז טל-שיר](https://www.linkedin.com/in/erez-tal-shir/)
+- **ווטסאפ ישיר** — [052-454-5963](https://wa.me/972524545963)
+- **טלפון** — [052-454-5963](tel:+972524545963)
+
+---
+
+## License
+
+[MIT](LICENSE) © Erez Tal-Shir. Take the engines, fork the portal, ship your own.

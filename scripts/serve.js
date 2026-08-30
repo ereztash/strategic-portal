@@ -21,6 +21,7 @@ const TYPES = {
 
 createServer(async (request, response) => {
   const url = new URL(request.url, `http://localhost:${PORT}`);
+
   // normalize + prefix check keeps `../` traversal out of the served tree.
   const target = normalize(join(ROOT, decodeURIComponent(url.pathname)));
   if (!target.startsWith(ROOT)) {

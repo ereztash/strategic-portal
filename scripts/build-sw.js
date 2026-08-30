@@ -63,9 +63,14 @@ export async function buildServiceWorker() {
   return { source, next, assets, version };
 }
 
+/** True when the committed sw.js already matches the tree, ignoring line endings. */
+export function isCurrent({ source, next }) {
+  return source.replace(/\r\n/g, '\n') === next.replace(/\r\n/g, '\n');
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const { source, next, assets } = await buildServiceWorker();
-  if (source === next) {
+  if (isCurrent({ source, next })) {
     console.log(`sw.js already lists ${assets.length} assets`);
   } else {
     await writeFile(join(ROOT, 'sw.js'), next);
