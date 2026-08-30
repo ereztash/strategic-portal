@@ -238,6 +238,8 @@ const DICTIONARIES = {
     'toast.engineDeleted': 'המנוע נמחק',
     'toast.storageFull': 'האחסון המקומי מלא. מחקו פריטים מהכספת.',
     'toast.offlineReady': 'הפורטל זמין גם ללא רשת',
+    'toast.updateReady': 'יש גרסה חדשה של הפורטל',
+    'toast.updateAction': 'רענן',
 
     'contact.title': 'לא חייבים להסתדר עם זה לבד',
     'contact.lead': 'הפורטל הוא כלי. הקהילה היא המקום שבו מבינים איך להשתמש בו - שאלות, פרומפטים שעבדו, ומה שלא.',
@@ -477,6 +479,8 @@ const DICTIONARIES = {
     'toast.engineDeleted': 'Engine deleted',
     'toast.storageFull': 'Local storage is full. Delete some vault items.',
     'toast.offlineReady': 'The portal now works offline',
+    'toast.updateReady': 'A new version of the portal is ready',
+    'toast.updateAction': 'Reload',
 
     'contact.title': 'You do not have to work this out alone',
     'contact.lead': 'The portal is the tool. The community is where people work out how to use it - questions, prompts that landed, and the ones that did not.',

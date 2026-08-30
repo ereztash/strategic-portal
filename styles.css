@@ -958,3 +958,13 @@ code {
 .footer-brand .icon { color: var(--primary); }
 .footer-note { font-size: 0.8rem; color: var(--text-faint); }
 .footer-links { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+.toast[data-actionable='true'] { cursor: pointer; padding-inline-end: var(--space-3); }
+.toast-action {
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 0.8rem;
+}
