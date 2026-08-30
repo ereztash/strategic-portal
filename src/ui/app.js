@@ -11,6 +11,7 @@ import { createRegistry } from '../core/registry.js';
 import { store as defaultStore, TRASH_RETENTION_DAYS } from '../core/store.js';
 import { getLocale, localeMeta, setLocale, t, timeStrings } from '../core/i18n.js';
 import { formatRelative, uid } from '../core/utils.js';
+import { inviteDecision } from '../core/invite.js';
 import { toast } from './toast.js';
 
 const MAX_RECENTS = 8;
@@ -286,6 +287,34 @@ export function createApp({ store = defaultStore, router } = {}) {
     wipe() {
       store.reset();
       registry.refresh([]);
+    },
+
+    /* --- community invitation -------------------------------------------- */
+
+    /**
+     * Whether the invitation has been earned yet. Driven by copies, because a
+     * copied prompt is the one unambiguous signal that the portal delivered
+     * something worth reciprocating for.
+     */
+    inviteDecision() {
+      return inviteDecision({
+        copies: store.get('stats').totalCopied,
+        engagement: store.get('engagement'),
+      });
+    },
+
+    markInviteShown() {
+      store.update('engagement', (engagement) => ({ ...engagement, shownAt: Date.now() }));
+    },
+
+    /** A dismissal is an answer; `invite.js` honours it for two weeks. */
+    dismissInvite() {
+      store.update('engagement', (engagement) => ({ ...engagement, dismissedAt: Date.now() }));
+    },
+
+    /** Once they have gone to the community, stop asking entirely. */
+    markInviteAccepted() {
+      store.update('engagement', (engagement) => ({ ...engagement, joined: true }));
     },
 
     /* --- misc ------------------------------------------------------------ */

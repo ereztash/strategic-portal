@@ -20,11 +20,11 @@ function description(link) {
 }
 
 /** One outbound link, rendered as a card or as a compact row. */
-function linkNode(link, { compact = false } = {}) {
+function linkNode(link, { compact = false, primary = false } = {}) {
   return h(
     'a',
     {
-      class: compact ? 'contact-row' : 'card contact-card',
+      class: `${compact ? 'contact-row' : 'card contact-card'}${primary ? ' is-primary' : ''}`,
       href: link.url,
       target: '_blank',
       rel: 'noopener noreferrer',
@@ -41,11 +41,75 @@ function linkNode(link, { compact = false } = {}) {
   );
 }
 
-/** The invitation block, shown at the foot of the home view. */
-export function communityBlock() {
+/** The one link we actually want clicked. */
+export function primaryLink() {
+  return CONTACT.links.find((link) => link.primary) ?? CONTACT.links[0];
+}
+
+/** Everything else, deliberately quieter so the primary action stands alone. */
+function secondaryLinks() {
+  return CONTACT.links.filter((link) => !link.primary);
+}
+
+/** The big button. One action, so there is nothing to choose between. */
+function joinButton(app, { label } = {}) {
+  const link = primaryLink();
+  return h(
+    'a',
+    {
+      class: 'btn btn-primary btn-lg join-btn',
+      href: link.url,
+      target: '_blank',
+      rel: 'noopener noreferrer',
+      onClick: () => app?.markInviteAccepted(),
+    },
+    icon('whatsapp', { size: 19 }),
+    label ?? t('contact.join'),
+  );
+}
+
+/**
+ * The invitation shown after a prompt is copied - the one moment the visitor
+ * has just been given something. Dismissible, and a dismissal is remembered.
+ */
+export function inviteCard(app, { onClose } = {}) {
+  const card = h(
+    'aside',
+    { class: 'panel invite', dataset: { accent: 'emerald' }, role: 'note' },
+    h(
+      'div',
+      { class: 'invite-body' },
+      h('h3', { class: 'invite-title' }, icon('whatsapp', { size: 18 }), t('invite.title')),
+      h('p', { class: 'page-lead' }, t('invite.body')),
+    ),
+    h(
+      'div',
+      { class: 'invite-actions' },
+      joinButton(app, { label: t('invite.cta') }),
+      h(
+        'button',
+        {
+          class: 'btn btn-ghost btn-sm',
+          type: 'button',
+          onClick: () => {
+            app.dismissInvite();
+            card.remove();
+            onClose?.();
+          },
+        },
+        t('invite.dismiss'),
+      ),
+    ),
+  );
+  app.markInviteShown();
+  return card;
+}
+
+/** The invitation block at the foot of the home view: one action, then the rest. */
+export function communityBlock(app) {
   return h(
     'section',
-    { class: 'panel community' },
+    { class: 'panel community', dataset: { accent: 'emerald' } },
     h(
       'div',
       { class: 'community-head' },
@@ -53,11 +117,17 @@ export function communityBlock() {
       h(
         'div',
         null,
-        h('h2', { style: { fontSize: '1.2rem', marginBottom: '4px' } }, t('contact.title')),
+        h('h2', { style: { fontSize: '1.25rem', marginBottom: '4px' } }, t('contact.title')),
         h('p', { class: 'page-lead' }, t('contact.lead')),
       ),
     ),
-    h('div', { class: 'grid grid-cards' }, ...CONTACT.links.map((link) => linkNode(link))),
+    joinButton(app),
+    h(
+      'details',
+      { class: 'community-more' },
+      h('summary', null, t('contact.more')),
+      h('div', { class: 'footer-links' }, ...secondaryLinks().map((link) => linkNode(link, { compact: true }))),
+    ),
   );
 }
 
@@ -92,7 +162,13 @@ export function renderFooter() {
           h('a', { href: `tel:${CONTACT.phone.tel}`, dir: 'ltr' }, CONTACT.phone.display),
         ),
       ),
-      h('div', { class: 'footer-links' }, ...CONTACT.links.map((link) => linkNode(link, { compact: true }))),
+      h(
+        'div',
+        { class: 'footer-links' },
+        ...CONTACT.links.map((link) =>
+          linkNode(link, { compact: true, primary: Boolean(link.primary) }),
+        ),
+      ),
     ),
   );
 }

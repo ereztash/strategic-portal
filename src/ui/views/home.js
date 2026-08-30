@@ -73,6 +73,6 @@ export function renderHome({ app, router }) {
         })
       : null,
 
-    communityBlock(),
+    communityBlock(app),
   );
 }

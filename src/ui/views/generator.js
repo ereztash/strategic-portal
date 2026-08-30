@@ -18,6 +18,7 @@ import { TARGETS, buildTargetUrl } from '../../core/targets.js';
 import { decodeState, encodeState } from '../router.js';
 import { debounce } from '../../core/utils.js';
 import { emptyState, favoriteButton, fieldControl, levelChip, techniqueChips } from '../components.js';
+import { inviteCard } from '../footer.js';
 import { toast } from '../toast.js';
 
 export function renderGenerator({ app, router, params, query }) {
@@ -257,6 +258,21 @@ export function renderGenerator({ app, router, params, query }) {
     return tab === 'generic' && generated?.generic ? generated.generic : generated?.strategic ?? '';
   }
 
+  // The invitation lives here so it appears exactly where the visitor's eyes
+  // already are - directly under the prompt they just took.
+  const inviteSlot = h('div', { class: 'invite-slot' });
+
+  /**
+   * Called after a copy, which is the moment the portal has actually given
+   * something. `inviteDecision` decides whether the ask has been earned yet;
+   * this only renders it.
+   */
+  function maybeInvite() {
+    if (inviteSlot.childElementCount > 0) return;
+    if (!app.inviteDecision().show) return;
+    inviteSlot.append(inviteCard(app));
+  }
+
   const copyButton = h(
     'button',
     {
@@ -269,6 +285,7 @@ export function renderGenerator({ app, router, params, query }) {
         toast(t('toast.copied'), { tone: 'success' });
         replace(copyButton, icon('check', { size: 16 }), t('gen.copied'));
         setTimeout(() => replace(copyButton, icon('copy', { size: 16 }), t('gen.copy')), 1800);
+        maybeInvite();
       },
     },
     icon('copy', { size: 16 }),
@@ -339,6 +356,7 @@ export function renderGenerator({ app, router, params, query }) {
         }
         app.track('copy', engine.id);
         window.open(url, '_blank', 'noopener');
+        maybeInvite();
       },
     },
     icon('external', { size: 16 }),
@@ -447,6 +465,7 @@ export function renderGenerator({ app, router, params, query }) {
         metaBar,
         techniqueBar,
         actionRow,
+        inviteSlot,
       ),
     ),
   );
