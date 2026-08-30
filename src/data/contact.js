@@ -9,6 +9,16 @@ export const CONTACT = {
   name: 'ארז טל-שיר',
   nameEn: 'Erez Tal-Shir',
 
+  /**
+   * A snapshot, not a live count - there is no API behind the WhatsApp group.
+   * Update `members` and `countedAt` together when you next check; a stale
+   * number that undersells the community is the failure mode to avoid.
+   */
+  community: {
+    members: 516,
+    countedAt: '2026-08-30',
+  },
+
   /** Shown in full, and linked for both a call and WhatsApp. */
   phone: {
     display: '052-454-5963',

@@ -1010,3 +1010,6 @@ code {
 .invite-title { display: flex; align-items: center; gap: var(--space-2); font-size: 1rem; }
 .invite-title .icon { color: var(--success); }
 .invite-actions { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+.member-badge { margin-inline-start: var(--space-2); vertical-align: middle; }
+.community-title, .invite-title { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }

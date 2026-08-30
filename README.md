@@ -148,7 +148,7 @@ Static hosting, no build. `vercel.json` sets `cleanUrls`, a CSP, and a
 
 הפורטל הוא כלי. הקהילה היא המקום שבו מבינים איך להשתמש בו.
 
-- **קהילת מ-0 ל-AI** — [קבוצת הוואטסאפ הפתוחה](https://chat.whatsapp.com/Ja5mg2IDxAxG2O0FKl3c7S)
+- **קהילת מ-0 ל-AI** — [קבוצת הוואטסאפ הפתוחה](https://chat.whatsapp.com/Ja5mg2IDxAxG2O0FKl3c7S) · 516 חברים
 - **קבוצת הפורטל** — [הקבוצה הייעודית](https://chat.whatsapp.com/CTG7ptNi8zFBoAtyOSyYFm)
 - **לינקדאין** — [ארז טל-שיר](https://www.linkedin.com/in/erez-tal-shir/)
 - **ווטסאפ ישיר** — [052-454-5963](https://wa.me/972524545963)

@@ -245,6 +245,7 @@ const DICTIONARIES = {
     'contact.lead': 'מה שאין בפורטל הוא מה שקורה אחרי ההעתקה: מה עבד, מה נפל, ואיך מתקנים. זה קורה בקהילה.',
     'contact.join': 'הצטרפו לקהילה בוואטסאפ',
     'contact.more': 'עוד דרכים ליצור קשר',
+    'contact.members': ({ count }) => `${count} חברים`,
 
     'invite.title': 'עבד לך?',
     'invite.body': 'החלק שאף כלי לא פותר הוא לדעת אם הפלט באמת טוב. בקהילה מעלים פרומפטים שעבדו, כאלה שנפלו, ומה שהשתנה ביניהם.',
@@ -492,6 +493,7 @@ const DICTIONARIES = {
     'contact.lead': 'What the portal cannot give you is what happens after you paste: what worked, what fell flat, and how it got fixed. That happens in the community.',
     'contact.join': 'Join the WhatsApp community',
     'contact.more': 'Other ways to get in touch',
+    'contact.members': ({ count }) => `${count} members`,
 
     'invite.title': 'Did it work?',
     'invite.body': 'The part no tool solves is knowing whether the output was actually good. The community is where people post the prompts that landed, the ones that did not, and what changed between them.',
