@@ -17,10 +17,22 @@ const TYPES = {
   '.json': 'application/json; charset=utf-8',
   '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.woff2': 'font/woff2',
 };
 
 createServer(async (request, response) => {
   const url = new URL(request.url, `http://localhost:${PORT}`);
+
+  // The host redirects `/index.html` to `/`, and that is not cosmetic: it is
+  // why the precached copy of index.html carries a redirect flag, which a
+  // navigation may not be served. Testing offline against a server that
+  // answers /index.html directly hides the failure entirely, so this one
+  // redirects too.
+  if (url.pathname === '/index.html') {
+    response.writeHead(308, { location: './', 'content-type': 'text/plain' }).end('Redirecting...');
+    return;
+  }
 
   // normalize + prefix check keeps `../` traversal out of the served tree.
   const target = normalize(join(ROOT, decodeURIComponent(url.pathname)));

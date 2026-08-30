@@ -8,21 +8,31 @@
 <meta name="theme-color" content="#050810">
 <meta name="color-scheme" content="dark light">
 
+<!-- The portal is passed around in WhatsApp, which renders a bare link
+     without a raster og:image and needs the URL absolute to fetch it. -->
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="מ-0 ל-AI">
 <meta property="og:title" content="מ-0 ל-AI | פורטל אסטרטגי">
 <meta property="og:description" content="מכאב לפרומפט שעובד. 50 מנועי פרומפטים, בונה מנועים אישי, והכל נשמר אצלכם במכשיר.">
 <meta property="og:locale" content="he_IL">
+<meta property="og:url" content="https://strategic-portal.vercel.app/">
+<meta property="og:image" content="https://strategic-portal.vercel.app/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="מכאב לפרומפט שעובד - 50 מנועי פרומפטים בעברית">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://strategic-portal.vercel.app/">
 
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="./assets/icon.svg">
+<!-- iOS ignores the manifest's icons and will not take an SVG here, so an
+     installed portal showed a blank tile until this was a PNG. -->
+<link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
 
-<!-- The web font is a progressive enhancement: the stack in styles.css falls
-     back to the system Hebrew face, so the portal stays readable offline. -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap"></noscript>
+<!-- The font is served from this origin - see the @font-face block in
+     styles.css for why. Only the Hebrew subset is preloaded: it is what the
+     interface is actually set in, and the Latin subsets load on demand. -->
+<link rel="preload" href="./assets/fonts/assistant-hebrew.woff2" as="font" type="font/woff2" crossorigin>
 
 <link rel="stylesheet" href="./styles.css">
 

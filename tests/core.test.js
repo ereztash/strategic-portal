@@ -13,10 +13,13 @@ import { buildHash, decodeState, encodeState, parseHash } from '../src/ui/router
 import { ICONS, ICON_NAMES } from '../src/ui/icons.js';
 import { CATEGORIES, CUSTOM_CATEGORY } from '../src/data/categories.js';
 import { BUILTIN_ENGINES } from '../src/data/engines/index.js';
-import { buildServiceWorker, isCurrent } from '../scripts/build-sw.js';
+import { buildServiceWorker, collectAssets, isCurrent, versionFor } from '../scripts/build-sw.js';
 import { CONTACT } from '../src/data/contact.js';
 import { DISMISS_COOLDOWN_DAYS, MIN_COPIES_BEFORE_ASK, inviteDecision } from '../src/core/invite.js';
-import { readFile } from 'node:fs/promises';
+import { readFile, stat, writeFile } from 'node:fs/promises';
+
+const STYLES = new URL('../styles.css', import.meta.url);
+const CANONICAL_ORIGIN = 'https://strategic-portal.vercel.app';
 
 test.after(() => setLocale('he'));
 
@@ -284,6 +287,103 @@ test('the service worker precache list matches what is on disk', async () => {
   assert.ok(assets.includes('./index.html'));
   assert.ok(assets.includes('./src/main.js'));
   assert.ok(assets.some((asset) => asset.startsWith('./src/data/engines/')));
+});
+
+test('the cache version tracks asset contents, not just the file list', async () => {
+  const assets = await collectAssets();
+  const version = await versionFor(assets);
+
+  // Editing a file without adding one has to move the version: precached
+  // assets are served stale-while-revalidate, so an unchanged sw.js means a
+  // visitor keeps the old stylesheet until their next load.
+  const original = await readFile(STYLES, 'utf8');
+  try {
+    await writeFile(STYLES, `${original}\n/* drift probe */\n`);
+    const edited = await versionFor(await collectAssets());
+    assert.notEqual(edited, version, 'a content-only edit left the cache version untouched');
+  } finally {
+    await writeFile(STYLES, original);
+  }
+
+  assert.equal(await versionFor(await collectAssets()), version, 'versionFor is not deterministic');
+});
+
+test('the app makes no third-party requests', async () => {
+  // The footer promises "no server, no account, no tracking" in both locales.
+  // A web font, analytics snippet or CDN link would quietly make that false,
+  // so the shipped shell is checked for anything that reaches another origin.
+  const shell = await Promise.all(
+    ['../index.html', '../styles.css', '../manifest.webmanifest'].map((file) =>
+      readFile(new URL(file, import.meta.url), 'utf8'),
+    ),
+  );
+
+  for (const source of shell) {
+    const origins = [...source.matchAll(/https?:\/\/[^\s"'()<>]+/g)]
+      .map((match) => match[0])
+      // Namespaces and spec links in comments are never fetched.
+      .filter((url) => !url.startsWith('http://www.w3.org/'))
+      .filter((url) => !/^https:\/\/openapi\.vercel\.sh/.test(url))
+      // The portal's own canonical origin: og:url, og:image and the canonical
+      // link have to be absolute for a link-preview crawler to resolve them,
+      // and they point back here, not at anyone else.
+      .filter((url) => !url.startsWith(`${CANONICAL_ORIGIN}/`));
+    assert.deepEqual(origins, [], `the shell reaches off-origin: ${origins.join(', ')}`);
+  }
+});
+
+test('the font is served from this origin and precached', async () => {
+  const css = await readFile(new URL('../styles.css', import.meta.url), 'utf8');
+  const faces = [...css.matchAll(/@font-face\s*\{[^}]*\}/g)].map((match) => match[0]);
+  assert.ok(faces.length > 0, 'no @font-face is declared');
+  for (const face of faces) {
+    assert.match(face, /src:\s*url\('\.\/assets\/fonts\//, 'a font face is not served from ./assets/fonts');
+  }
+
+  // Precached, or the offline app silently drops to the system face.
+  const { assets } = await buildServiceWorker();
+  const fonts = assets.filter((asset) => asset.endsWith('.woff2'));
+  assert.equal(fonts.length, faces.length, 'every declared face must be precached');
+});
+
+test('every icon the manifest and the shell reference exists and is precached', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../manifest.webmanifest', import.meta.url), 'utf8'));
+  const html = await readFile(new URL('../index.html', import.meta.url), 'utf8');
+  const { assets } = await buildServiceWorker();
+
+  // iOS takes apple-touch-icon and ignores the manifest, and it will not
+  // render an SVG there - so that one has to be a raster file specifically.
+  const appleTouch = html.match(/rel="apple-touch-icon"\s+href="([^"]+)"/)?.[1];
+  assert.ok(appleTouch, 'no apple-touch-icon is declared');
+  assert.match(appleTouch, /\.png$/, 'apple-touch-icon must be a PNG for iOS');
+
+  // Android launchers want a real 192 and 512.
+  const sizes = manifest.icons.filter((i) => i.type === 'image/png').map((i) => i.sizes);
+  for (const required of ['192x192', '512x512']) {
+    assert.ok(sizes.includes(required), `the manifest has no ${required} PNG icon`);
+  }
+  assert.ok(
+    manifest.icons.some((i) => i.purpose === 'maskable' && i.type === 'image/png'),
+    'the manifest has no maskable PNG icon',
+  );
+
+  const referenced = [...manifest.icons.map((i) => i.src), appleTouch];
+  for (const src of referenced) {
+    const path = src.startsWith('./') ? src : `./${src.replace(/^\//, '')}`;
+    await stat(new URL(`../${path.slice(2)}`, import.meta.url));
+    assert.ok(assets.includes(path), `${path} is referenced but not precached`);
+  }
+});
+
+test('the social card is generated but deliberately left out of the precache', async () => {
+  const card = new URL('../assets/og-image.png', import.meta.url);
+  const { size } = await stat(card);
+  assert.ok(size > 0, 'the social card is missing - run `npm run build:icons`');
+
+  // Only link-preview crawlers fetch it, and they do not use the service
+  // worker, so precaching it would cost every install its ~130KB for nothing.
+  const { assets } = await buildServiceWorker();
+  assert.ok(!assets.some((a) => a.includes('og-image')), 'the social card should not be precached');
 });
 
 /* --- contact and repo metadata ------------------------------------------- */

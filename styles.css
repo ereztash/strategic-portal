@@ -1,3 +1,43 @@
+/*
+ * The interface font, served from this origin.
+ *
+ * It used to come from Google Fonts, which meant every visitor's IP, browser
+ * and referring page were sent to a third party on load - on a page whose own
+ * footer promises "no server, no account, no tracking". It also left the font
+ * outside the service worker, so the offline app quietly fell back to the
+ * system face. Both are fixed by hosting the three subsets here: 48KB total,
+ * one variable file each, precached with everything else.
+ *
+ * Google's own stylesheet declares these as discrete weights pointing at one
+ * variable file per subset, and silently omits 900 because the axis stops at
+ * 800 - so the three `font-weight: 900` rules below already rendered at 800.
+ * Declaring the range outright keeps that exactly, and says why.
+ */
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/assistant-hebrew.woff2') format('woff2');
+  unicode-range: U+0307-0308, U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/assistant-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Assistant';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('./assets/fonts/assistant-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* ============================================================================
    מ-0 ל-AI · Strategic Portal - design system
    ---------------------------------------------------------------------------
@@ -1013,3 +1053,61 @@ code {
 
 .member-badge { margin-inline-start: var(--space-2); vertical-align: middle; }
 .community-title, .invite-title { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* --- Touch devices --------------------------------------------------------- */
+
+/*
+ * Two things change on a touch screen, and neither should cost desktop density,
+ * so both are scoped to a coarse pointer rather than to a width.
+ */
+/*
+ * The header stacks into three rows on a narrow screen - brand, actions,
+ * search - which came to 233px, or 41% of an iPhone SE, permanently occluded
+ * because it was sticky. Once you are in a generator the header is pure
+ * overhead and the form needs the room, so below the stacking breakpoint it
+ * scrolls away like normal content. Scrolling back up is a smaller cost than
+ * losing two fifths of every screen.
+ */
+@media (max-width: 780px) {
+  .app-header { position: static; }
+}
+
+@media (pointer: coarse) {
+  /*
+   * iOS Safari zooms the whole viewport when a focused control computes under
+   * 16px, so tapping the search box shunted the page sideways and left the
+   * visitor pinching back out. 16px is the threshold, not a preference.
+   * Listed at the same specificity as the compact builder rows so this wins.
+   */
+  .input,
+  .select,
+  .textarea,
+  .builder-field-row .input,
+  .builder-field-row .select {
+    font-size: 16px;
+  }
+
+  /* Reliable tap targets: 44px is the smallest that is comfortably hittable. */
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .chip,
+  .contact-row,
+  .tab {
+    min-height: 44px;
+  }
+  .btn-sm {
+    min-height: 44px;
+    padding-inline: var(--space-4);
+  }
+  .community-more summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .fav-toggle {
+    width: 44px;
+    height: 44px;
+  }
+}

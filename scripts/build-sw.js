@@ -24,7 +24,10 @@ async function walk(dir) {
   for (const entry of entries) {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) files.push(...(await walk(path)));
-    else if (/\.(js|css|svg|json|webmanifest)$/.test(entry.name)) files.push(path);
+    // The social card is fetched by link-preview crawlers, never by the app,
+    // so precaching its 130KB would cost every install for nothing.
+    else if (/^og-/.test(entry.name)) continue;
+    else if (/\.(js|css|svg|png|json|webmanifest|woff2)$/.test(entry.name)) files.push(path);
   }
   return files;
 }
@@ -36,9 +39,24 @@ export async function collectAssets() {
     .sort();
 }
 
-/** A digest of the asset list, used as the cache name so updates take effect. */
-export function versionFor(assets) {
-  return createHash('sha256').update(assets.join('|')).digest('hex').slice(0, 10);
+/**
+ * A digest of the assets, used as the cache name so updates take effect.
+ *
+ * Contents are hashed, not just paths. The runtime serves precached assets
+ * stale-while-revalidate, so a visitor sees a changed stylesheet only on their
+ * *next* load - unless sw.js itself changed, which installs a new worker and
+ * lets main.js offer the reload. Hashing only the file list meant an edit that
+ * added no files shipped an identical sw.js, and the fix reached nobody until
+ * they came back. Hashing contents ties every asset change to a new worker.
+ */
+export async function versionFor(assets) {
+  const digest = createHash('sha256');
+  for (const asset of assets) {
+    digest.update(asset);
+    // './' is the navigation entry, not a file; index.html covers its bytes.
+    if (asset !== './') digest.update(await readFile(join(ROOT, asset)));
+  }
+  return digest.digest('hex').slice(0, 10);
 }
 
 export function renderBlock(assets, version) {
@@ -54,7 +72,7 @@ export function renderBlock(assets, version) {
 
 export async function buildServiceWorker() {
   const assets = await collectAssets();
-  const version = versionFor(assets);
+  const version = await versionFor(assets);
   const source = await readFile(join(ROOT, 'sw.js'), 'utf8');
   const start = source.indexOf(MARKER_START);
   const end = source.indexOf(MARKER_END);

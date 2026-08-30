@@ -12,8 +12,6 @@
   "keywords": [
     "prompt-engineering",
     "prompt-library",
-    "mcp",
-    "model-context-protocol",
     "hebrew",
     "rtl",
     "local-first",
@@ -26,7 +24,8 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "serve": "node scripts/serve.js",
-    "build:sw": "node scripts/build-sw.js"
+    "build:sw": "node scripts/build-sw.js",
+    "build:icons": "node scripts/build-icons.js"
   },
   "engines": {
     "node": ">=20"

@@ -10,9 +10,16 @@
  */
 
 /* --- precache:start --- */
-const CACHE_VERSION = '87df325ff8';
+const CACHE_VERSION = '07eac50566';
 const PRECACHE = [
   './',
+  './assets/apple-touch-icon.png',
+  './assets/fonts/assistant-hebrew.woff2',
+  './assets/fonts/assistant-latin-ext.woff2',
+  './assets/fonts/assistant-latin.woff2',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/icon-maskable-512.png',
   './assets/icon-maskable.svg',
   './assets/icon.svg',
   './index.html',
@@ -87,6 +94,25 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+/**
+ * The cached shell to answer a navigation with when the network is gone.
+ *
+ * A navigation may not be answered with a response whose `redirected` flag is
+ * set - the browser rejects it outright, so the page fails to load rather than
+ * falling back. Static hosts routinely redirect `/index.html` to `/`, and this
+ * one does: precaching `./index.html` there stores exactly such a response, so
+ * the old fallback turned "offline" into a blank error page until some later
+ * online visit happened to overwrite the entry. `./` is fetched directly and
+ * carries no redirect, so it is preferred, and anything redirected is refused.
+ */
+async function offlineShell() {
+  for (const key of ['./', './index.html']) {
+    const cached = await caches.match(key);
+    if (cached && !cached.redirected) return cached;
+  }
+  return Response.error();
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
@@ -99,10 +125,10 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((response) => {
           const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put('./index.html', copy));
+          caches.open(CACHE_NAME).then((cache) => cache.put('./', copy));
           return response;
         })
-        .catch(() => caches.match('./index.html').then((cached) => cached ?? Response.error())),
+        .catch(() => offlineShell()),
     );
     return;
   }
