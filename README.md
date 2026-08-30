@@ -115,7 +115,7 @@ filled one without leaving dangling labels like `רקע:` with nothing after it.
 ## Development
 
 ```bash
-npm test          # 108 cases, no dependencies
+npm test          # 111 cases, no dependencies
 npm run serve     # http://localhost:4173
 npm run build:sw  # regenerate the service worker precache list
 npm run build:icons  # re-render the PNG icons and social card from the SVGs

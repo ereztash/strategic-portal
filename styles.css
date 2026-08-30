@@ -62,7 +62,7 @@
 
   --text: #f1f5f9;
   --text-muted: #94a3b8;
-  --text-faint: #64748b;
+  --text-faint: #7a8aa1;
   --text-inverse: #050810;
 
   --primary: #3b82f6;
@@ -76,8 +76,21 @@
   --danger: #f43f5e;
   --danger-soft: rgba(244, 63, 94, 0.14);
 
+  /*
+   * The primary call to action carries white text at 16px bold, which WCAG
+   * counts as normal text and holds to 4.5:1. On the vivid 500 pair that came
+   * to 3.68:1 - the least legible element in the app was the one button it
+   * most wants pressed. One step darker clears it at 5.17:1 and keeps the
+   * gradient's character.
+   */
+  --cta-from: #2563eb;
+  --cta-to: #9333ea;
+
   --accent: var(--primary);
   --accent-soft: var(--primary-soft);
+  /* The uncategorised default, one step lighter than --primary so it clears
+     4.5:1 as text on the primary tint. Light theme darkens it instead. */
+  --accent-text: #60a5fa;
 
   --radius-sm: 8px;
   --radius: 14px;
@@ -122,14 +135,15 @@
 
   --text: #0f172a;
   --text-muted: #52627a;
-  --text-faint: #7c8aa0;
+  --text-faint: #5b6878;
   --text-inverse: #ffffff;
 
   --primary: #2563eb;
   --primary-soft: rgba(37, 99, 235, 0.1);
+  --accent-text: #1d4ed8;
   --secondary: #7c3aed;
   --secondary-soft: rgba(124, 58, 237, 0.1);
-  --success: #059669;
+  --success: #047857;
   --success-soft: rgba(5, 150, 105, 0.12);
   --warning: #b45309;
   --warning-soft: rgba(180, 83, 9, 0.12);
@@ -141,18 +155,39 @@
   --shadow-lg: 0 28px 60px -34px rgba(15, 23, 42, 0.45);
 }
 
-/* Category accents. Set on a container; every child reads var(--accent). */
-[data-accent='blue'] { --accent: #3b82f6; --accent-soft: rgba(59, 130, 246, 0.14); }
-[data-accent='rose'] { --accent: #f43f5e; --accent-soft: rgba(244, 63, 94, 0.14); }
-[data-accent='amber'] { --accent: #f59e0b; --accent-soft: rgba(245, 158, 11, 0.14); }
-[data-accent='violet'] { --accent: #a855f7; --accent-soft: rgba(168, 85, 247, 0.14); }
-[data-accent='cyan'] { --accent: #06b6d4; --accent-soft: rgba(6, 182, 212, 0.14); }
-[data-accent='emerald'] { --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.14); }
-[data-accent='sky'] { --accent: #0ea5e9; --accent-soft: rgba(14, 165, 233, 0.14); }
-[data-accent='indigo'] { --accent: #6366f1; --accent-soft: rgba(99, 102, 241, 0.14); }
-[data-accent='teal'] { --accent: #14b8a6; --accent-soft: rgba(20, 184, 166, 0.14); }
-[data-accent='orange'] { --accent: #f97316; --accent-soft: rgba(249, 115, 22, 0.14); }
-[data-accent='lime'] { --accent: #84cc16; --accent-soft: rgba(132, 204, 22, 0.14); }
+/*
+ * Category accents.
+ *
+ * Set on a container; every child reads var(--accent). The vivid shade is
+ * kept for fills, borders and icons, where 3:1 is the bar. Text needs 4.5:1
+ * and these do not reach it - lime on a light card measured 2.13 - so text
+ * reads --accent-text instead: a lighter step on dark, a darker one on light.
+ * Every pairing below is at or above 4.5:1 against the surface it lands on.
+ */
+[data-accent='blue'] { --accent: #3b82f6; --accent-soft: rgba(59, 130, 246, 0.14); --accent-text: #60a5fa; }
+[data-accent='rose'] { --accent: #f43f5e; --accent-soft: rgba(244, 63, 94, 0.14); --accent-text: #fb7185; }
+[data-accent='amber'] { --accent: #f59e0b; --accent-soft: rgba(245, 158, 11, 0.14); --accent-text: #fbbf24; }
+[data-accent='violet'] { --accent: #a855f7; --accent-soft: rgba(168, 85, 247, 0.14); --accent-text: #c084fc; }
+[data-accent='cyan'] { --accent: #06b6d4; --accent-soft: rgba(6, 182, 212, 0.14); --accent-text: #22d3ee; }
+[data-accent='emerald'] { --accent: #10b981; --accent-soft: rgba(16, 185, 129, 0.14); --accent-text: #34d399; }
+[data-accent='sky'] { --accent: #0ea5e9; --accent-soft: rgba(14, 165, 233, 0.14); --accent-text: #38bdf8; }
+[data-accent='indigo'] { --accent: #6366f1; --accent-soft: rgba(99, 102, 241, 0.14); --accent-text: #818cf8; }
+[data-accent='teal'] { --accent: #14b8a6; --accent-soft: rgba(20, 184, 166, 0.14); --accent-text: #2dd4bf; }
+[data-accent='orange'] { --accent: #f97316; --accent-soft: rgba(249, 115, 22, 0.14); --accent-text: #fb923c; }
+[data-accent='lime'] { --accent: #84cc16; --accent-soft: rgba(132, 204, 22, 0.14); --accent-text: #a3e635; }
+
+/* Light theme darkens the text step; the fill shade is unchanged. */
+:root[data-theme='light'] [data-accent='blue'] { --accent-text: #1d4ed8; }
+:root[data-theme='light'] [data-accent='rose'] { --accent-text: #be123c; }
+:root[data-theme='light'] [data-accent='amber'] { --accent-text: #92400e; }
+:root[data-theme='light'] [data-accent='violet'] { --accent-text: #7e22ce; }
+:root[data-theme='light'] [data-accent='cyan'] { --accent-text: #0e7490; }
+:root[data-theme='light'] [data-accent='emerald'] { --accent-text: #047857; }
+:root[data-theme='light'] [data-accent='sky'] { --accent-text: #0369a1; }
+:root[data-theme='light'] [data-accent='indigo'] { --accent-text: #4338ca; }
+:root[data-theme='light'] [data-accent='teal'] { --accent-text: #0f766e; }
+:root[data-theme='light'] [data-accent='orange'] { --accent-text: #9a3412; }
+:root[data-theme='light'] [data-accent='lime'] { --accent-text: #4d7c0f; }
 
 /* --- Reset ---------------------------------------------------------------- */
 
@@ -185,7 +220,7 @@ body {
 img, svg { display: block; max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: none; padding: 0; }
-a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a { color: var(--accent-text); text-decoration-thickness: 1px; text-underline-offset: 3px; }
 h1, h2, h3, h4 { line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; }
 [hidden] { display: none !important; }
 
@@ -406,7 +441,7 @@ h1, h2, h3, h4 { line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; }
   gap: var(--space-2);
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* Engine card: leads with the symptom, because that is how people search. */
@@ -473,7 +508,7 @@ h1, h2, h3, h4 { line-height: 1.25; font-weight: 800; letter-spacing: -0.01em; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  background: linear-gradient(135deg, var(--cta-from), var(--cta-to));
   border-color: transparent;
   color: #fff;
   box-shadow: var(--glow);
@@ -603,9 +638,9 @@ button.chip:hover { border-color: var(--border-strong); color: var(--text); }
 .chip[aria-pressed='true'], .chip.is-active {
   background: var(--accent-soft);
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
-  color: var(--accent);
+  color: var(--accent-text);
 }
-.chip-accent { color: var(--accent); background: var(--accent-soft); border-color: transparent; }
+.chip-accent { color: var(--accent-text); background: var(--accent-soft); border-color: transparent; }
 .chip-success { color: var(--success); background: var(--success-soft); border-color: transparent; }
 .chip-warning { color: var(--warning); background: var(--warning-soft); border-color: transparent; }
 .chip-danger { color: var(--danger); background: var(--danger-soft); border-color: transparent; }
@@ -761,7 +796,7 @@ button.chip:hover { border-color: var(--border-strong); color: var(--text); }
   border-radius: var(--radius-lg);
 }
 .stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; }
-.stat-value { font-size: 2rem; font-weight: 900; color: var(--accent); line-height: 1.1; }
+.stat-value { font-size: 2rem; font-weight: 900; color: var(--accent-text); line-height: 1.1; }
 .stat-hint { font-size: 0.74rem; color: var(--text-faint); }
 
 .bar-row { display: grid; gap: var(--space-2); grid-template-columns: minmax(120px, 1fr) minmax(0, 3fr) auto; align-items: center; font-size: 0.85rem; }
@@ -925,7 +960,7 @@ code {
   border: 1px solid var(--border);
   font-family: var(--font-mono);
   font-size: 0.86em;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* --- Responsive ----------------------------------------------------------- */
@@ -1004,7 +1039,7 @@ code {
   padding: 2px var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 800;
   font-size: 0.8rem;
 }
