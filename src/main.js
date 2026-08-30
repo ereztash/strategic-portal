@@ -267,8 +267,16 @@ function installServiceWorker() {
   let typed = false;
   document.addEventListener('input', () => { typed = true; }, { capture: true, once: true });
 
+  // `clients.claim()` also fires controllerchange on a page that had no
+  // controller - a first visit, where the worker is not replacing an older
+  // build and there is nothing to pick up. Reloading there costs a round trip
+  // and a flash of the page redrawing, which on a phone is the worst place to
+  // spend both. Only a controller that *replaces* one means a new build.
+  const hadController = Boolean(navigator.serviceWorker.controller);
+
   let reloading = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) return;
     // Guards a reload loop: controllerchange fires again on the fresh page.
     if (reloading) return;
     reloading = true;

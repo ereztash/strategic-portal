@@ -115,13 +115,17 @@ filled one without leaving dangling labels like `רקע:` with nothing after it.
 ## Development
 
 ```bash
-npm test          # 89 cases, no dependencies
+npm test          # 101 cases, no dependencies
 npm run serve     # http://localhost:4173
 npm run build:sw  # regenerate the service worker precache list
 ```
 
-`npm run build:sw` must be re-run whenever a file is added under `src/` or
-`assets/`; a test fails if the committed `sw.js` has drifted from the tree.
+`npm run build:sw` must be re-run whenever anything it precaches changes -
+a file added under `src/` or `assets/`, and equally an edit to `styles.css` or
+an existing module. The cache name is a digest of the assets' contents, so
+changing one is what ships a new worker and lets the page offer a reload;
+without it the old copy is served for another visit. A test fails if the
+committed `sw.js` has drifted from the tree.
 
 ### Adding an engine
 

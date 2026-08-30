@@ -1013,3 +1013,61 @@ code {
 
 .member-badge { margin-inline-start: var(--space-2); vertical-align: middle; }
 .community-title, .invite-title { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+
+/* --- Touch devices --------------------------------------------------------- */
+
+/*
+ * Two things change on a touch screen, and neither should cost desktop density,
+ * so both are scoped to a coarse pointer rather than to a width.
+ */
+/*
+ * The header stacks into three rows on a narrow screen - brand, actions,
+ * search - which came to 233px, or 41% of an iPhone SE, permanently occluded
+ * because it was sticky. Once you are in a generator the header is pure
+ * overhead and the form needs the room, so below the stacking breakpoint it
+ * scrolls away like normal content. Scrolling back up is a smaller cost than
+ * losing two fifths of every screen.
+ */
+@media (max-width: 780px) {
+  .app-header { position: static; }
+}
+
+@media (pointer: coarse) {
+  /*
+   * iOS Safari zooms the whole viewport when a focused control computes under
+   * 16px, so tapping the search box shunted the page sideways and left the
+   * visitor pinching back out. 16px is the threshold, not a preference.
+   * Listed at the same specificity as the compact builder rows so this wins.
+   */
+  .input,
+  .select,
+  .textarea,
+  .builder-field-row .input,
+  .builder-field-row .select {
+    font-size: 16px;
+  }
+
+  /* Reliable tap targets: 44px is the smallest that is comfortably hittable. */
+  .icon-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .chip,
+  .contact-row,
+  .tab {
+    min-height: 44px;
+  }
+  .btn-sm {
+    min-height: 44px;
+    padding-inline: var(--space-4);
+  }
+  .community-more summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  .fav-toggle {
+    width: 44px;
+    height: 44px;
+  }
+}

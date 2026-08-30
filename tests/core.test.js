@@ -13,10 +13,12 @@ import { buildHash, decodeState, encodeState, parseHash } from '../src/ui/router
 import { ICONS, ICON_NAMES } from '../src/ui/icons.js';
 import { CATEGORIES, CUSTOM_CATEGORY } from '../src/data/categories.js';
 import { BUILTIN_ENGINES } from '../src/data/engines/index.js';
-import { buildServiceWorker, isCurrent } from '../scripts/build-sw.js';
+import { buildServiceWorker, collectAssets, isCurrent, versionFor } from '../scripts/build-sw.js';
 import { CONTACT } from '../src/data/contact.js';
 import { DISMISS_COOLDOWN_DAYS, MIN_COPIES_BEFORE_ASK, inviteDecision } from '../src/core/invite.js';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
+
+const STYLES = new URL('../styles.css', import.meta.url);
 
 test.after(() => setLocale('he'));
 
@@ -284,6 +286,25 @@ test('the service worker precache list matches what is on disk', async () => {
   assert.ok(assets.includes('./index.html'));
   assert.ok(assets.includes('./src/main.js'));
   assert.ok(assets.some((asset) => asset.startsWith('./src/data/engines/')));
+});
+
+test('the cache version tracks asset contents, not just the file list', async () => {
+  const assets = await collectAssets();
+  const version = await versionFor(assets);
+
+  // Editing a file without adding one has to move the version: precached
+  // assets are served stale-while-revalidate, so an unchanged sw.js means a
+  // visitor keeps the old stylesheet until their next load.
+  const original = await readFile(STYLES, 'utf8');
+  try {
+    await writeFile(STYLES, `${original}\n/* drift probe */\n`);
+    const edited = await versionFor(await collectAssets());
+    assert.notEqual(edited, version, 'a content-only edit left the cache version untouched');
+  } finally {
+    await writeFile(STYLES, original);
+  }
+
+  assert.equal(await versionFor(await collectAssets()), version, 'versionFor is not deterministic');
 });
 
 /* --- contact and repo metadata ------------------------------------------- */

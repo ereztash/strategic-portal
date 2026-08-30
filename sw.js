@@ -10,7 +10,7 @@
  */
 
 /* --- precache:start --- */
-const CACHE_VERSION = '87df325ff8';
+const CACHE_VERSION = '2e6bd0c1a8';
 const PRECACHE = [
   './',
   './assets/icon-maskable.svg',
