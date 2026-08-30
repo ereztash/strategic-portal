@@ -15,10 +15,13 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const ROOT_FILES = ['index.html', 'styles.css', 'manifest.webmanifest'];
 const ASSET_DIRS = ['src', 'assets'];
+/** Server-only code that the browser never loads, so it must not be precached. */
+const EXCLUDED_DIRS = [join('src', 'mcp')];
 const MARKER_START = '/* --- precache:start --- */';
 const MARKER_END = '/* --- precache:end --- */';
 
 async function walk(dir) {
+  if (EXCLUDED_DIRS.includes(dir)) return [];
   const entries = await readdir(join(ROOT, dir), { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
@@ -63,9 +66,14 @@ export async function buildServiceWorker() {
   return { source, next, assets, version };
 }
 
+/** True when the committed sw.js already matches the tree, ignoring line endings. */
+export function isCurrent({ source, next }) {
+  return source.replace(/\r\n/g, '\n') === next.replace(/\r\n/g, '\n');
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const { source, next, assets } = await buildServiceWorker();
-  if (source === next) {
+  if (isCurrent({ source, next })) {
     console.log(`sw.js already lists ${assets.length} assets`);
   } else {
     await writeFile(join(ROOT, 'sw.js'), next);

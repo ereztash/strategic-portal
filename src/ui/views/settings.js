@@ -9,6 +9,8 @@ import { confirmDialog } from '../modal.js';
 import { sectionHead } from '../components.js';
 import { toast } from '../toast.js';
 import { openShortcutsDialog } from '../shortcuts.js';
+import { CONTACT } from '../../data/contact.js';
+import { getLocale } from '../../core/i18n.js';
 
 const THEMES = ['dark', 'light', 'system'];
 const THEME_ICON = { dark: 'moon', light: 'sun', system: 'monitor' };
@@ -194,6 +196,21 @@ export function renderSettings({ app, router }) {
         { class: 'btn', type: 'button', style: { alignSelf: 'flex-start' }, onClick: () => openShortcutsDialog() },
         icon('keyboard', { size: 15 }),
         t('settings.shortcuts'),
+      ),
+      h('hr', { class: 'divider' }),
+      h('p', { class: 'field-hint' }, t('contact.lead')),
+      h(
+        'div',
+        { class: 'footer-links' },
+        ...CONTACT.links.map((link) =>
+          h(
+            'a',
+            { class: 'contact-row', href: link.url, target: '_blank', rel: 'noopener noreferrer' },
+            icon(link.icon, { size: 15 }),
+            getLocale() === 'en' ? link.labelEn : link.label,
+            icon('external', { size: 13, className: 'contact-out', title: t('contact.openIn') }),
+          ),
+        ),
       ),
     ),
   );

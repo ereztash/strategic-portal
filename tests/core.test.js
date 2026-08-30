@@ -13,7 +13,7 @@ import { buildHash, decodeState, encodeState, parseHash } from '../src/ui/router
 import { ICONS, ICON_NAMES } from '../src/ui/icons.js';
 import { CATEGORIES, CUSTOM_CATEGORY } from '../src/data/categories.js';
 import { BUILTIN_ENGINES } from '../src/data/engines/index.js';
-import { buildServiceWorker } from '../scripts/build-sw.js';
+import { buildServiceWorker, isCurrent } from '../scripts/build-sw.js';
 
 test.after(() => setLocale('he'));
 
@@ -276,7 +276,8 @@ test('every icon body is drawable markup', () => {
 
 test('the service worker precache list matches what is on disk', async () => {
   const { source, next, assets } = await buildServiceWorker();
-  assert.equal(source, next, 'sw.js is stale - run `npm run build:sw`');
+  // Compared line-ending agnostically: a CRLF checkout on Windows is not drift.
+  assert.ok(isCurrent({ source, next }), 'sw.js is stale - run `npm run build:sw`');
   assert.ok(assets.includes('./index.html'));
   assert.ok(assets.includes('./src/main.js'));
   assert.ok(assets.some((asset) => asset.startsWith('./src/data/engines/')));

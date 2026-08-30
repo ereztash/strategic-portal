@@ -1,7 +1,26 @@
 {
   "name": "strategic-portal",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "מ-0 ל-AI - a symptom-first prompt engineering portal. Local-first, zero runtime dependencies.",
+  "license": "MIT",
+  "author": "Erez Tal-Shir",
+  "homepage": "https://github.com/ereztash/strategic-portal#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ereztash/strategic-portal.git"
+  },
+  "keywords": [
+    "prompt-engineering",
+    "prompt-library",
+    "mcp",
+    "model-context-protocol",
+    "hebrew",
+    "rtl",
+    "local-first",
+    "pwa",
+    "zero-dependencies",
+    "claude"
+  ],
   "type": "module",
   "private": true,
   "scripts": {

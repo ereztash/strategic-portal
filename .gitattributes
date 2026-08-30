@@ -1,0 +1,13 @@
+# Normalise line endings in the working tree on every platform.
+#
+# Without this, a Windows clone with core.autocrlf=true checks sw.js out with
+# CRLF while scripts/build-sw.js generates LF, so the "service worker is
+# current" test fails on a clean checkout with nothing actually wrong.
+* text=auto eol=lf
+
+# Binary assets must never be touched.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff binary
+*.woff2 binary

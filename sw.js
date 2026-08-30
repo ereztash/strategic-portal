@@ -10,7 +10,7 @@
  */
 
 /* --- precache:start --- */
-const CACHE_VERSION = 'cae556e83e';
+const CACHE_VERSION = 'bf3b99052c';
 const PRECACHE = [
   './',
   './assets/icon-maskable.svg',
@@ -29,6 +29,7 @@ const PRECACHE = [
   './src/core/tokens.js',
   './src/core/utils.js',
   './src/data/categories.js',
+  './src/data/contact.js',
   './src/data/engines/business.js',
   './src/data/engines/code.js',
   './src/data/engines/communication.js',
@@ -44,6 +45,7 @@ const PRECACHE = [
   './src/ui/app.js',
   './src/ui/components.js',
   './src/ui/dom.js',
+  './src/ui/footer.js',
   './src/ui/icons.js',
   './src/ui/modal.js',
   './src/ui/palette.js',
