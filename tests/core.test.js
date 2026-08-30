@@ -9,6 +9,11 @@ import { TECHNIQUES, resolveTechniques, techniqueUsage } from '../src/core/techn
 import { buildTargetUrl, getTarget } from '../src/core/targets.js';
 import { validateCustomEngine } from '../src/core/registry.js';
 import { escapeHtml, formatRelative, normalizeText, slugify, tokenize } from '../src/core/utils.js';
+import { buildHash, decodeState, encodeState, parseHash } from '../src/ui/router.js';
+import { ICONS, ICON_NAMES } from '../src/ui/icons.js';
+import { CATEGORIES, CUSTOM_CATEGORY } from '../src/data/categories.js';
+import { BUILTIN_ENGINES } from '../src/data/engines/index.js';
+import { buildServiceWorker } from '../scripts/build-sw.js';
 
 test.after(() => setLocale('he'));
 
@@ -193,4 +198,86 @@ test('relative time picks the right bucket', () => {
   assert.equal(formatRelative(Date.now() - 5 * minute, strings), '5m');
   assert.equal(formatRelative(Date.now() - 3 * 60 * minute, strings), '3h');
   assert.equal(formatRelative(Date.now() - 4 * 24 * 60 * minute, strings), '4d');
+});
+
+/* --- routing ------------------------------------------------------------- */
+
+test('hash parsing covers every route and falls through to notFound', () => {
+  assert.equal(parseHash('').name, 'home');
+  assert.equal(parseHash('#/').name, 'home');
+  assert.equal(parseHash('#/vault').name, 'vault');
+  assert.equal(parseHash('#/vault/trash').name, 'trash');
+  assert.equal(parseHash('#/stats').name, 'stats');
+  assert.equal(parseHash('#/settings').name, 'settings');
+  assert.equal(parseHash('#/builder').name, 'builder');
+  assert.equal(parseHash('#/nowhere').name, 'notFound');
+});
+
+test('route params and query strings decode', () => {
+  const engine = parseHash('#/e/anti-robot?v=abc');
+  assert.equal(engine.name, 'engine');
+  assert.equal(engine.params.engineId, 'anti-robot');
+  assert.equal(engine.query.v, 'abc');
+
+  const search = parseHash(`#/search?q=${encodeURIComponent('שלום עולם')}`);
+  assert.equal(search.query.q, 'שלום עולם');
+});
+
+test('buildHash round-trips through parseHash', () => {
+  const cases = [
+    ['home', {}, {}],
+    ['vault', {}, {}],
+    ['trash', {}, {}],
+    ['category', { categoryId: 'debug' }, {}],
+    ['engine', { engineId: 'anti-robot' }, { v: 'xyz' }],
+    ['builderEdit', { engineId: 'custom_1' }, {}],
+  ];
+  for (const [name, params, query] of cases) {
+    const parsed = parseHash(buildHash(name, params, query));
+    assert.equal(parsed.name, name, `route ${name} did not round-trip`);
+    assert.deepEqual(parsed.params, params);
+    for (const [key, value] of Object.entries(query)) assert.equal(parsed.query[key], value);
+  }
+});
+
+test('empty query values are dropped from the hash', () => {
+  assert.equal(buildHash('search', {}, { q: '', tech: undefined }), '#/search');
+});
+
+test('share state survives an encode/decode round trip, Hebrew included', () => {
+  const state = { values: { topic: 'למה עסקים משלמים על פרסום שלא עובד', count: 3 }, mods: ['cot', 'no-fluff'] };
+  assert.deepEqual(decodeState(encodeState(state)), state);
+});
+
+test('a corrupt share link decodes to null instead of throwing', () => {
+  assert.equal(decodeState('not-valid-base64!!'), null);
+  assert.equal(decodeState(''), null);
+});
+
+/* --- icons --------------------------------------------------------------- */
+
+test('every icon referenced by the library and categories exists', () => {
+  const names = new Set(ICON_NAMES);
+  for (const category of [...CATEGORIES, CUSTOM_CATEGORY]) {
+    assert.ok(names.has(category.icon), `category "${category.id}" uses missing icon "${category.icon}"`);
+  }
+  for (const engine of BUILTIN_ENGINES) {
+    assert.ok(names.has(engine.symptomIcon), `engine "${engine.id}" uses missing icon "${engine.symptomIcon}"`);
+  }
+});
+
+test('every icon body is drawable markup', () => {
+  for (const name of ICON_NAMES) {
+    assert.match(ICONS[name], /^<(path|circle|rect|ellipse|line)/, `icon "${name}" is not a shape`);
+  }
+});
+
+/* --- service worker ------------------------------------------------------ */
+
+test('the service worker precache list matches what is on disk', async () => {
+  const { source, next, assets } = await buildServiceWorker();
+  assert.equal(source, next, 'sw.js is stale - run `npm run build:sw`');
+  assert.ok(assets.includes('./index.html'));
+  assert.ok(assets.includes('./src/main.js'));
+  assert.ok(assets.some((asset) => asset.startsWith('./src/data/engines/')));
 });
