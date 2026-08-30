@@ -92,9 +92,63 @@ export function stripHebrewPrefix(token) {
   return HEBREW_PREFIXES.includes(token[0]) ? token.slice(1) : token;
 }
 
+/**
+ * Words that mean the same thing to a person searching, but share no letters
+ * the matcher can use.
+ *
+ * Hebrew writes borrowed words more than one way, and a searcher has no idea
+ * which spelling the library happens to use: "אימייל" is the standard form of
+ * the word the corpus only ever writes as "מייל", and it returned nothing at
+ * all. Grouping the variants is data, not cleverness - each group below was
+ * added because a plausible query for it came back empty against this library.
+ *
+ * Expansion happens at query time only, so the index does not grow, and a
+ * synonym scores below a direct hit so exact wording still ranks first.
+ */
+export const SYNONYM_GROUPS = [
+  ['אימייל', 'מייל', 'מיילים', 'דואל', 'איימיל'],
+  ['וואטסאפ', 'ווטסאפ', 'whatsapp', 'הודעה'],
+  ['פרזנטציה', 'מצגת', 'שקופיות'],
+  ['קלישאתי', 'קלישאות', 'קלישאה', 'גנרי'],
+  ['רזומה', 'קורות חיים', 'קו"ח'],
+  ['לינקדאין', 'לינקדין', 'linkedin'],
+  ['פרומפט', 'פרומט', 'prompt'],
+  ['באג', 'תקלה', 'שגיאה', 'בעיה'],
+  ['סיכום', 'תקציר', 'לסכם'],
+  ['תמחור', 'מחיר', 'מחירים', 'תעריף'],
+];
+
+/** token -> the other spellings of the same idea. Built once at module load. */
+const SYNONYMS = new Map();
+for (const group of SYNONYM_GROUPS) {
+  for (const word of group) {
+    const others = group.filter((other) => other !== word).flatMap((other) => other.split(' '));
+    SYNONYMS.set(normalizeText(word), others.map(normalizeText));
+  }
+}
+
+/** How much a synonym hit is worth against wording the library actually uses. */
+const SYNONYM_PENALTY = 0.75;
+
+export function synonymsFor(token) {
+  return SYNONYMS.get(token) ?? SYNONYMS.get(stripHebrewPrefix(token)) ?? [];
+}
+
 /** Best score of one query token against one field's tokens. 0 means no match. */
 function scoreToken(queryToken, fieldTokens) {
   const stripped = stripHebrewPrefix(queryToken);
+  let best = directScore(queryToken, stripped, fieldTokens);
+  if (best === 1) return best;
+
+  // Only worth the extra pass when a direct read of the query fell short.
+  for (const synonym of synonymsFor(queryToken)) {
+    const scored = directScore(synonym, stripHebrewPrefix(synonym), fieldTokens) * SYNONYM_PENALTY;
+    if (scored > best) best = scored;
+  }
+  return best;
+}
+
+function directScore(queryToken, stripped, fieldTokens) {
   let best = 0;
   for (const raw of fieldTokens) {
     for (const token of raw === stripHebrewPrefix(raw) ? [raw] : [raw, stripHebrewPrefix(raw)]) {

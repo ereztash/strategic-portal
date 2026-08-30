@@ -81,6 +81,7 @@ const DICTIONARIES = {
     'gen.genericNote': 'כך רוב האנשים היו מנסחים את זה. השוו לתוצאה האסטרטגית.',
     'gen.genericUnavailable': 'למנוע אישי אין גרסת השוואה גנרית.',
     'gen.stats': ({ words, tokens }) => `${words} מילים · ~${tokens} טוקנים`,
+    'gen.announced': ({ words }) => `הפרומפט מוכן, ${words} מילים. הוא נמצא בשדה התוצאה.`,
     'gen.techniquesUsed': 'טכניקות בפרומפט הזה',
     'gen.fillExample': 'מלא דוגמה',
 
@@ -329,6 +330,7 @@ const DICTIONARIES = {
     'gen.genericNote': 'This is how most people would phrase it. Compare with the strategic result.',
     'gen.genericUnavailable': 'Custom engines have no naive comparison.',
     'gen.stats': ({ words, tokens }) => `${words} words · ~${tokens} tokens`,
+    'gen.announced': ({ words }) => `Prompt ready, ${words} words. It is in the result field.`,
     'gen.techniquesUsed': 'Techniques in this prompt',
     'gen.fillExample': 'Fill example',
 
