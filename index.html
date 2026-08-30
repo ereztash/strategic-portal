@@ -1,34 +1,59 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
+<!doctype html>
+<html lang="he" dir="rtl" data-theme="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מ-0 ל-AI | פורטל אסטרטגי 2.0</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="config.js"></script>
-<link rel="stylesheet" href="styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>מ-0 ל-AI | פורטל אסטרטגי</title>
+<meta name="description" content="פורטל פרומפטים שמתחיל מהכאב: תארו את הבעיה, קבלו פרומפט מהונדס, וראו במה הוא עדיף על מה שהייתם כותבים לבד. 50 מנועים, עובד גם ללא רשת.">
+<meta name="theme-color" content="#050810">
+<meta name="color-scheme" content="dark light">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="מ-0 ל-AI | פורטל אסטרטגי">
+<meta property="og:description" content="מכאב לפרומפט שעובד. 50 מנועי פרומפטים, בונה מנועים אישי, והכל נשמר אצלכם במכשיר.">
+<meta property="og:locale" content="he_IL">
+
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./assets/icon.svg">
+
+<!-- The web font is a progressive enhancement: the stack in styles.css falls
+     back to the system Hebrew face, so the portal stays readable offline. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700;800;900&display=swap"></noscript>
+
+<link rel="stylesheet" href="./styles.css">
+
+<script>
+  // Applied before first paint so a light-theme user never sees a dark flash.
+  try {
+    var stored = JSON.parse(localStorage.getItem('sp.v2.settings') || '{}');
+    var theme = stored.theme || 'dark';
+    if (theme === 'system') theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    if (stored.locale === 'en') {
+      document.documentElement.lang = 'en';
+      document.documentElement.dir = 'ltr';
+    }
+  } catch (error) { /* private mode: keep the defaults in the markup */ }
+</script>
 </head>
-<body class="flex flex-col relative h-screen overflow-hidden">
-<div id="app-loader"><div class="spinner mb-4"></div><div class="text-brand-primary font-bold tracking-widest text-sm">טוען מערכת הפעלה...</div></div>
-<header class="w-full border-b border-dark-600/50 bg-dark-900/90 backdrop-blur-md sticky top-0 z-50 flex-shrink-0 shadow-lg">
-  <div class="max-w-7xl mx-auto px-4 md:px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-    <div class="flex items-center gap-3 cursor-pointer group" onclick="navigate('home')"><div class="bg-gradient-to-br from-brand-primary to-brand-secondary p-2.5 rounded-xl text-white shadow-glow-primary group-hover:shadow-glow-secondary transition-all"><i class="fa-solid fa-bolt text-xl"></i></div><div><h1 class="text-xl md:text-2xl font-black tracking-tight text-white leading-none">מ-0 ל-AI</h1><span class="text-brand-primary font-medium text-xs tracking-wide">Production OS v2.0</span></div></div>
-    <div class="w-full md:w-1/3 relative search-container group"><div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"><i class="fa-solid fa-magnifying-glass text-gray-500"></i></div><input type="text" id="global-search" placeholder="חיפוש מנועים..." class="w-full bg-dark-800 border border-dark-600 rounded-xl py-2 pr-11 pl-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-brand-primary transition-all"></div>
-    <div class="flex items-center gap-2"><button onclick="navigate('history')" class="p-2 rounded-lg hover:bg-dark-800 text-gray-400 hover:text-white transition-colors" title="הפרומפטים שלי"><i class="fa-solid fa-bookmark text-lg"></i></button><button onclick="navigate('builder')" class="p-2 rounded-lg hover:bg-dark-800 text-gray-400 hover:text-brand-secondary transition-colors" title="בונה מנועים אישי"><i class="fa-solid fa-hammer text-lg"></i></button><button onclick="navigate('stats')" class="p-2 rounded-lg hover:bg-dark-800 text-gray-400 hover:text-brand-success transition-colors" title="סטטיסטיקות"><i class="fa-solid fa-chart-simple text-lg"></i></button></div>
+<body>
+
+<div id="app-loader">
+  <div class="spinner"></div>
+  <p style="color:var(--text-muted);font-weight:700;letter-spacing:.08em;font-size:.8rem">טוען מערכת...</p>
+</div>
+
+<noscript>
+  <div style="max-width:640px;margin:64px auto;padding:24px;text-align:center">
+    <h1>מ-0 ל-AI</h1>
+    <p>הפורטל בנוי כאפליקציה מקומית שרצה בדפדפן, ולכן הוא דורש JavaScript. הפעילו אותו והרעננו את הדף.</p>
   </div>
-  <div class="w-full bg-dark-800/50 border-t border-dark-600/30 py-2"><div class="max-w-7xl mx-auto px-4 md:px-6 flex items-center text-sm text-gray-400 font-medium" id="breadcrumbs"><span class="hover:text-white cursor-pointer transition-colors" onclick="navigate('home')"><i class="fa-solid fa-house ml-1"></i> ראשי</span></div></div>
-</header>
-<main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-6 py-8 overflow-y-auto" id="main-scroll-area">
-<section id="view-home" class="view-section h-full"><div class="text-center mb-10 max-w-3xl mx-auto mt-2"><h2 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight tracking-tight">באיזו חזית אנחנו <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-secondary">נלחמים היום?</span></h2></div><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="categories-grid"></div></section>
-<section id="view-category" class="view-section min-h-full"><div class="mb-8 flex items-center gap-5 glass-panel p-6 rounded-3xl border-l-4 border-l-brand-primary"><div id="cat-header-icon" class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl shadow-lg"></div><div><h2 id="cat-header-title" class="text-3xl font-bold text-white mb-1"></h2><p id="cat-header-desc" class="text-gray-400 text-lg"></p></div></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="symptoms-grid"></div></section>
-<section id="view-generator" class="view-section min-h-full"><div class="mb-8 w-full flex flex-col md:flex-row gap-6"><div class="flex-1 glass-panel p-6 rounded-3xl border-t-4 border-t-brand-primary"><div class="flex items-start gap-4 mb-4"><div id="tool-icon-wrapper" class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-secondary text-white text-2xl flex items-center justify-center flex-shrink-0"><i id="tool-icon"></i></div><div><h2 id="tool-title" class="text-2xl font-extrabold text-white mb-1"></h2><p id="tool-desc" class="text-gray-400 text-sm"></p></div></div></div><div class="flex-1 glass-panel p-6 rounded-3xl border border-dark-600 bg-dark-800/80"><div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-chess-knight text-brand-warning"></i><h3 class="font-bold text-white">לוגיקה אסטרטגית</h3></div><p id="tool-strategy" class="text-gray-300 text-sm leading-relaxed"></p></div></div><div class="flex flex-col lg:flex-row gap-6 w-full pb-10"><div class="w-full lg:w-5/12 glass-panel rounded-3xl p-6 h-fit border border-dark-600"><h3 class="text-lg font-bold mb-6 text-white flex items-center"><i class="fa-solid fa-sliders ml-2 text-brand-primary"></i> הגדרות:</h3><form id="dynamic-form" class="space-y-4" onsubmit="event.preventDefault(); generatePrompt();"></form><button type="button" onclick="generatePrompt()" class="mt-6 w-full bg-gradient-to-r from-brand-primary to-brand-secondary hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 rounded-xl transition-all shadow-glow-primary">חולל פרומפט</button></div><div class="w-full lg:w-7/12 glass-panel rounded-3xl p-6 flex flex-col relative border border-dark-600"><div class="flex justify-between items-center mb-4 border-b border-dark-600/50 pb-4"><h3 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-terminal ml-2 text-brand-secondary"></i> התוצאה</h3><div class="flex items-center gap-2 bg-dark-800 rounded-lg p-1 border border-dark-600" id="compare-toggle-container" style="display:none;"><button id="tab-strategic" onclick="setCompareMode('strategic')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-brand-primary text-white transition-all">אסטרטגי</button><button id="tab-generic" onclick="setCompareMode('generic')" class="px-3 py-1.5 text-xs font-bold rounded-md text-gray-400 hover:text-white transition-all">גנרי (להשוואה)</button></div></div><div class="relative flex-1 flex flex-col min-h-[350px]"><div id="output-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 z-10"><i class="fa-solid fa-microchip text-3xl mb-2 opacity-50"></i><p class="text-sm">המתינו לנתונים...</p></div><textarea id="generated-prompt" readonly class="flex-1 w-full h-full bg-dark-900 border border-dark-600 rounded-xl p-5 text-gray-200 font-mono text-sm leading-relaxed resize-none transition-all duration-300 opacity-0 compare-strategic focus:outline-none" dir="rtl"></textarea><div class="absolute bottom-4 left-4 flex gap-2 pointer-events-none opacity-0 transition-opacity duration-300" id="output-actions"><button id="save-btn" onclick="saveToHistory()" class="pointer-events-auto bg-dark-800 text-white border border-dark-600 hover:bg-dark-700 font-bold py-2 px-4 rounded-xl transition-all shadow-lg flex items-center gap-2"><i class="fa-regular fa-bookmark"></i> שמור</button><button id="copy-btn" onclick="copyPrompt()" class="pointer-events-auto bg-white text-dark-900 hover:bg-gray-200 font-bold py-2 px-4 rounded-xl transition-all shadow-xl flex items-center gap-2"><i class="fa-regular fa-copy"></i> העתק</button></div></div></div></div></section>
-<section id="view-history" class="view-section h-full"><div class="mb-8 flex justify-between items-end border-b border-dark-600/50 pb-4"><div><h2 class="text-3xl font-bold text-white mb-2"><i class="fa-solid fa-bookmark text-brand-primary ml-2"></i> הכספת שלי</h2><p class="text-gray-400">הפרומפטים ששמרת לשימוש חוזר.</p></div><button onclick="clearHistory()" class="text-sm text-brand-accent hover:underline"><i class="fa-solid fa-trash-can"></i> נקה הכל</button></div><div id="history-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div><div id="empty-history" class="hidden flex-col items-center justify-center py-16 text-gray-500"><i class="fa-regular fa-folder-open text-5xl mb-4"></i><h3 class="text-xl text-white">אין פרומפטים שמורים עדיין.</h3></div></section>
-<section id="view-builder" class="view-section min-h-full"><div class="mb-8 border-b border-dark-600/50 pb-4"><h2 class="text-3xl font-bold text-white mb-2"><i class="fa-solid fa-hammer text-brand-secondary ml-2"></i> בונה המנועים (No-Code)</h2><p class="text-gray-400">צרו מנוע פרומפטים אישי שיתווסף אוטומטית למערכת שלכם.</p></div><div class="flex flex-col lg:flex-row gap-6"><div class="w-full lg:w-1/2 glass-panel p-6 rounded-3xl border border-dark-600"><h3 class="font-bold text-white mb-4">1. פרטי המנוע</h3><div class="space-y-4 mb-6"><input type="text" id="build-title" placeholder="שם המנוע (למשל: כותב הבלוגים)" class="input-field w-full rounded-lg p-3 text-white text-sm"><input type="text" id="build-desc" placeholder="תיאור קצר (מה הוא עושה?)" class="input-field w-full rounded-lg p-3 text-white text-sm"><input type="text" id="build-symptom" placeholder="הכאב (למשל: נמאס לי לכתוב מאמרים מהר)" class="input-field w-full rounded-lg p-3 text-white text-sm"></div><div class="flex justify-between items-center mb-4 border-t border-dark-600 pt-4"><h3 class="font-bold text-white">2. שדות טופס (משתנים)</h3><button onclick="addBuilderField()" class="text-xs bg-brand-primary text-white px-3 py-1 rounded hover:bg-blue-600">+ הוסף שדה</button></div><div id="builder-fields" class="space-y-3 mb-4"></div><p class="text-xs text-brand-warning mb-4"><i class="fa-solid fa-circle-info"></i> השתמשו ב-ID של השדות בתוך התבנית שלכם.</p></div><div class="w-full lg:w-1/2 glass-panel p-6 rounded-3xl border border-dark-600 flex flex-col"><h3 class="font-bold text-white mb-4">3. תבנית הפרומפט הסופית</h3><p class="text-xs text-gray-400 mb-2">כתבו את הפרומפט. שלבו משתנים באמצעות סוגריים מסולסלים, למשל: <code class="text-brand-secondary bg-dark-900 px-1 rounded">{{topic}}</code></p><textarea id="build-template" class="input-field flex-1 w-full rounded-lg p-4 text-white text-sm font-mono min-h-[200px] mb-4" placeholder="כתבו כאן את תבנית הפרומפט, עם משתנים כמו {{topic}}"></textarea><button onclick="saveCustomEngine()" class="w-full bg-brand-success hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-colors shadow-lg"><i class="fa-solid fa-check"></i> שמור מנוע אישי</button></div></div></section>
-<section id="view-stats" class="view-section h-full"><div class="mb-8 border-b border-dark-600/50 pb-4"><h2 class="text-3xl font-bold text-white mb-2"><i class="fa-solid fa-chart-simple text-brand-success ml-2"></i> אנליטיקס וביצועים</h2><p class="text-gray-400">נתוני שימוש במנועים האסטרטגיים שלך.</p></div><div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"><div class="glass-panel p-6 rounded-2xl border border-dark-600 text-center"><div class="text-gray-400 text-sm font-bold mb-1">סה"כ פרומפטים שחוללו</div><div id="stat-total-gen" class="text-4xl font-black text-brand-primary">0</div></div><div class="glass-panel p-6 rounded-2xl border border-dark-600 text-center"><div class="text-gray-400 text-sm font-bold mb-1">פרומפטים שהועתקו (Success)</div><div id="stat-total-cop" class="text-4xl font-black text-brand-success">0</div></div><div class="glass-panel p-6 rounded-2xl border border-dark-600 text-center"><div class="text-gray-400 text-sm font-bold mb-1">מנועים פעילים</div><div id="stat-total-tools" class="text-4xl font-black text-brand-secondary">0</div></div></div><div class="glass-panel p-6 rounded-2xl border border-dark-600"><h3 class="font-bold text-white mb-4">מצעד המנועים (Usage Leaderboard)</h3><div id="stats-leaderboard" class="space-y-4"></div></div></section>
-<section id="view-search" class="view-section h-full"><div class="mb-8 border-b border-dark-600/50 pb-4"><h2 class="text-3xl font-bold text-white mb-2">תוצאות חיפוש</h2><p id="search-query-display" class="text-brand-primary text-lg"></p></div><div id="search-results-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div><div id="no-results-msg" class="hidden flex-col items-center justify-center py-20 text-gray-500"><i class="fa-solid fa-ghost text-5xl mb-4"></i><h3 class="text-xl text-white">אין תוצאות מדויקות</h3></div></section>
-</main>
-<script src="app1.js"></script><script src="app2a.js"></script><script src="app2b.js"></script><script src="app3.js"></script>
+</noscript>
+
+<script type="module" src="./src/main.js"></script>
 </body>
 </html>

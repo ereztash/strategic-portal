@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # The portal ships as plain ES modules with no dependencies, so the only
+        # thing to guard is that it keeps working on the supported Node range.
+        node: ['20', '22']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      # No install step: package.json has no dependencies, and `npm ci` would
+      # fail without a lockfile it does not need.
+      - run: npm test
+
+  service-worker-is-current:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regenerate the precache list
+        run: npm run build:sw
+      - name: Fail if sw.js drifted from the tree
+        run: |
+          if ! git diff --quiet -- sw.js; then
+            echo "::error file=sw.js::sw.js is stale. Run 'npm run build:sw' and commit the result."
+            git --no-pager diff -- sw.js
+            exit 1
+          fi
