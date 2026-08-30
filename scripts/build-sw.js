@@ -15,13 +15,10 @@ import { fileURLToPath } from 'node:url';
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const ROOT_FILES = ['index.html', 'styles.css', 'manifest.webmanifest'];
 const ASSET_DIRS = ['src', 'assets'];
-/** Server-only code that the browser never loads, so it must not be precached. */
-const EXCLUDED_DIRS = [join('src', 'mcp')];
 const MARKER_START = '/* --- precache:start --- */';
 const MARKER_END = '/* --- precache:end --- */';
 
 async function walk(dir) {
-  if (EXCLUDED_DIRS.includes(dir)) return [];
   const entries = await readdir(join(ROOT, dir), { withFileTypes: true });
   const files = [];
   for (const entry of entries) {

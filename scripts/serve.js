@@ -19,37 +19,8 @@ const TYPES = {
   '.svg': 'image/svg+xml',
 };
 
-/**
- * Minimal stand-in for the Vercel Node runtime, so `/api/*` functions can be
- * exercised locally with `npm run serve` instead of needing the Vercel CLI.
- */
-async function serveFunction(request, response, name) {
-  let handler;
-  try {
-    ({ default: handler } = await import(new URL(`../api/${name}.js`, import.meta.url).href));
-  } catch {
-    response.writeHead(404).end('No such function');
-    return;
-  }
-  response.status = (code) => {
-    response.statusCode = code;
-    return response;
-  };
-  response.json = (body) => {
-    response.setHeader('content-type', 'application/json; charset=utf-8');
-    response.end(JSON.stringify(body));
-  };
-  await handler(request, response);
-}
-
 createServer(async (request, response) => {
   const url = new URL(request.url, `http://localhost:${PORT}`);
-
-  const apiMatch = url.pathname.match(/^\/api\/([A-Za-z0-9_-]+)\/?$/);
-  if (apiMatch) {
-    await serveFunction(request, response, apiMatch[1]);
-    return;
-  }
 
   // normalize + prefix check keeps `../` traversal out of the served tree.
   const target = normalize(join(ROOT, decodeURIComponent(url.pathname)));

@@ -14,6 +14,8 @@ import { ICONS, ICON_NAMES } from '../src/ui/icons.js';
 import { CATEGORIES, CUSTOM_CATEGORY } from '../src/data/categories.js';
 import { BUILTIN_ENGINES } from '../src/data/engines/index.js';
 import { buildServiceWorker, isCurrent } from '../scripts/build-sw.js';
+import { CONTACT } from '../src/data/contact.js';
+import { readFile } from 'node:fs/promises';
 
 test.after(() => setLocale('he'));
 
@@ -281,4 +283,40 @@ test('the service worker precache list matches what is on disk', async () => {
   assert.ok(assets.includes('./index.html'));
   assert.ok(assets.includes('./src/main.js'));
   assert.ok(assets.some((asset) => asset.startsWith('./src/data/engines/')));
+});
+
+/* --- contact and repo metadata ------------------------------------------- */
+
+test('every contact link is valid and uses an icon that exists', () => {
+  const names = new Set(ICON_NAMES);
+  assert.ok(CONTACT.links.length >= 4);
+  for (const link of CONTACT.links) {
+    const url = new URL(link.url);
+    assert.ok(['https:', 'tel:'].includes(url.protocol), `${link.id} uses an unexpected scheme`);
+    assert.ok(names.has(link.icon), `${link.id} uses missing icon "${link.icon}"`);
+    assert.ok(link.label && link.labelEn, `${link.id} needs both locales`);
+    assert.ok(link.desc && link.descEn, `${link.id} needs a description in both locales`);
+  }
+});
+
+test('exactly one contact link is marked primary', () => {
+  assert.equal(CONTACT.links.filter((link) => link.primary).length, 1);
+});
+
+test('the phone number is consistent across its three representations', () => {
+  const { display, tel, whatsapp } = CONTACT.phone;
+  const digits = display.replace(/\D/g, '');
+  assert.equal(digits, '0524545963');
+  assert.equal(tel, `+972${digits.slice(1)}`);
+  assert.equal(whatsapp, `https://wa.me/972${digits.slice(1)}`);
+});
+
+test('the repo carries the metadata a public project needs', async () => {
+  const pkg = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+  assert.equal(pkg.license, 'MIT');
+  assert.ok(pkg.author && pkg.repository?.url && pkg.description);
+  assert.ok(pkg.keywords?.length >= 5);
+  const license = await readFile(new URL('../LICENSE', import.meta.url), 'utf8');
+  assert.match(license, /MIT License/);
+  assert.match(license, /Erez Tal-Shir/);
 });

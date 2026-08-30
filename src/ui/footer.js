@@ -88,6 +88,8 @@ export function renderFooter() {
             { href: CONTACT.links.find((link) => link.id === 'linkedin').url, target: '_blank', rel: 'noopener noreferrer' },
             getLocale() === 'en' ? CONTACT.nameEn : CONTACT.name,
           ),
+          ' · ',
+          h('a', { href: `tel:${CONTACT.phone.tel}`, dir: 'ltr' }, CONTACT.phone.display),
         ),
       ),
       h('div', { class: 'footer-links' }, ...CONTACT.links.map((link) => linkNode(link, { compact: true }))),

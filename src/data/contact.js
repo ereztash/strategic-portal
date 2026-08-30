@@ -8,6 +8,15 @@
 export const CONTACT = {
   name: 'ארז טל-שיר',
   nameEn: 'Erez Tal-Shir',
+
+  /** Shown in full, and linked for both a call and WhatsApp. */
+  phone: {
+    display: '052-454-5963',
+    // tel: and wa.me both want the international form; wa.me without the plus.
+    tel: '+972524545963',
+    whatsapp: 'https://wa.me/972524545963',
+  },
+
   links: [
     {
       id: 'community',
@@ -39,12 +48,20 @@ export const CONTACT = {
     },
     {
       id: 'whatsapp-direct',
-      label: 'הודעה ישירה',
-      labelEn: 'Message directly',
+      label: 'ווטסאפ · 052-454-5963',
+      labelEn: 'WhatsApp · 052-454-5963',
       desc: 'ווטסאפ אישי, לשאלות שלא מתאימות לקהילה.',
       descEn: 'Direct WhatsApp, for anything that does not belong in the group.',
-      // wa.me wants the international form without a plus or leading zero.
       url: 'https://wa.me/972524545963',
+      icon: 'whatsapp',
+    },
+    {
+      id: 'phone',
+      label: 'טלפון · 052-454-5963',
+      labelEn: 'Phone · 052-454-5963',
+      desc: 'לשיחה ישירה.',
+      descEn: 'For a direct call.',
+      url: 'tel:+972524545963',
       icon: 'phone',
     },
   ],
