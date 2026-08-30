@@ -24,7 +24,10 @@ async function walk(dir) {
   for (const entry of entries) {
     const path = join(dir, entry.name);
     if (entry.isDirectory()) files.push(...(await walk(path)));
-    else if (/\.(js|css|svg|json|webmanifest)$/.test(entry.name)) files.push(path);
+    // The social card is fetched by link-preview crawlers, never by the app,
+    // so precaching its 130KB would cost every install for nothing.
+    else if (/^og-/.test(entry.name)) continue;
+    else if (/\.(js|css|svg|png|json|webmanifest|woff2)$/.test(entry.name)) files.push(path);
   }
   return files;
 }

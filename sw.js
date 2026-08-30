@@ -10,9 +10,16 @@
  */
 
 /* --- precache:start --- */
-const CACHE_VERSION = '2e6bd0c1a8';
+const CACHE_VERSION = '07eac50566';
 const PRECACHE = [
   './',
+  './assets/apple-touch-icon.png',
+  './assets/fonts/assistant-hebrew.woff2',
+  './assets/fonts/assistant-latin-ext.woff2',
+  './assets/fonts/assistant-latin.woff2',
+  './assets/icon-192.png',
+  './assets/icon-512.png',
+  './assets/icon-maskable-512.png',
   './assets/icon-maskable.svg',
   './assets/icon.svg',
   './index.html',

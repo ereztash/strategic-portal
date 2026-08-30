@@ -115,9 +115,10 @@ filled one without leaving dangling labels like `רקע:` with nothing after it.
 ## Development
 
 ```bash
-npm test          # 104 cases, no dependencies
+npm test          # 108 cases, no dependencies
 npm run serve     # http://localhost:4173
 npm run build:sw  # regenerate the service worker precache list
+npm run build:icons  # re-render the PNG icons and social card from the SVGs
 ```
 
 `npm run build:sw` must be re-run whenever anything it precaches changes -
@@ -134,6 +135,12 @@ committed `sw.js` has drifted from the tree.
    variables, the baseline, and that the example renders a complete prompt.
 
 ### Data and privacy
+
+The portal makes **no third-party requests at all**. The interface font is
+served from this origin rather than Google Fonts, which otherwise sent every
+visitor's IP, user agent and referring page to Google on load - on a page whose
+own footer promises no tracking. A test asserts the shipped shell contains no
+off-origin URL, so it cannot creep back in, and the CSP allows `'self'` only.
 
 Everything lives in `localStorage` under `sp.v2.*` and leaves only through an
 explicit JSON export in Settings. Data written by v1 (`zeroToAi_*`) is migrated
