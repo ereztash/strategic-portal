@@ -10,7 +10,7 @@
  */
 
 /* --- precache:start --- */
-const CACHE_VERSION = '07eac50566';
+const CACHE_VERSION = '0b0f473fdb';
 const PRECACHE = [
   './',
   './assets/apple-touch-icon.png',

@@ -63,6 +63,14 @@ export function renderGenerator({ app, router, params, query }) {
     h('p', null, t('gen.placeholder')),
   );
   const metaBar = h('div', { class: 'output-meta' });
+  /*
+   * Generating is silent to a screen reader: the prompt lands in a readonly
+   * textarea nobody is focused on. The visible stats are bare numbers, so they
+   * would announce "247 words - ~1100 tokens" with no hint that anything was
+   * produced. This says what happened and where it went, and stays out of the
+   * layout so the design is unchanged.
+   */
+  const announcer = h('p', { class: 'visually-hidden', role: 'status', 'aria-live': 'polite' });
   const techniqueBar = h('div', { class: 'chip-row' });
   const diffLegend = h('p', { class: 'field-hint', hidden: true }, t('gen.diffLegend'));
 
@@ -134,6 +142,7 @@ export function renderGenerator({ app, router, params, query }) {
       outputText.dataset.variant = isGeneric ? 'generic' : 'strategic';
       outputText.value = isGeneric ? generated.generic : generated.strategic;
       const stats = measure(outputText.value);
+      announcer.textContent = t('gen.announced', stats);
       replace(
         metaBar,
         h('span', null, t('gen.stats', stats)),
@@ -461,6 +470,7 @@ export function renderGenerator({ app, router, params, query }) {
           tabRow,
         ),
         h('div', { class: 'output-body' }, outputText, diffBox, placeholder),
+        announcer,
         diffLegend,
         metaBar,
         techniqueBar,
