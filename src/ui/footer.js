@@ -41,6 +41,16 @@ function linkNode(link, { compact = false, primary = false } = {}) {
   );
 }
 
+/**
+ * Social proof, as a scannable chip rather than prose. The count is exact on
+ * purpose - a round number reads as marketing, an odd one reads as counted.
+ */
+function memberBadge() {
+  const { members } = CONTACT.community;
+  if (!members) return null;
+  return h('span', { class: 'chip chip-success member-badge' }, icon('users', { size: 13 }), t('contact.members', { count: members }));
+}
+
 /** The one link we actually want clicked. */
 export function primaryLink() {
   return CONTACT.links.find((link) => link.primary) ?? CONTACT.links[0];
@@ -79,7 +89,7 @@ export function inviteCard(app, { onClose } = {}) {
     h(
       'div',
       { class: 'invite-body' },
-      h('h3', { class: 'invite-title' }, icon('whatsapp', { size: 18 }), t('invite.title')),
+      h('h3', { class: 'invite-title' }, icon('whatsapp', { size: 18 }), t('invite.title'), memberBadge()),
       h('p', { class: 'page-lead' }, t('invite.body')),
     ),
     h(
@@ -117,7 +127,12 @@ export function communityBlock(app) {
       h(
         'div',
         null,
-        h('h2', { style: { fontSize: '1.25rem', marginBottom: '4px' } }, t('contact.title')),
+        h(
+          'h2',
+          { class: 'community-title', style: { fontSize: '1.25rem', marginBottom: '4px' } },
+          t('contact.title'),
+          memberBadge(),
+        ),
         h('p', { class: 'page-lead' }, t('contact.lead')),
       ),
     ),

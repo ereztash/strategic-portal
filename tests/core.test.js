@@ -372,3 +372,10 @@ test('exactly one contact link is promoted as the primary action', () => {
   assert.equal(primary.length, 1, 'more than one primary defeats having a primary');
   assert.match(primary[0].url, /^https:\/\/chat\.whatsapp\.com\//);
 });
+
+test('the community count is a real snapshot, with the date it was taken', () => {
+  const { members, countedAt } = CONTACT.community;
+  assert.ok(Number.isInteger(members) && members > 0, 'members must be a counted integer');
+  assert.match(countedAt, /^\d{4}-\d{2}-\d{2}$/, 'a snapshot needs the date it was taken');
+  assert.ok(!Number.isNaN(Date.parse(countedAt)), 'countedAt must be a real date');
+});
